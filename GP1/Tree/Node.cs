@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GP1
+namespace GP1.Tree
 {
-    public class Class1
+    public abstract class Node
     {
+        public abstract int Evaluate();
     }
 }

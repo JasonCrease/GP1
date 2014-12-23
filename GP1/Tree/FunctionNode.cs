@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UI.Tree
+namespace GP1.Tree
 {
     public class FunctionNode : Node
     {

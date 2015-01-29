@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace GP1.Tree
 {
+
     class ValueNode : Node
     {
         private int m_Value;

@@ -90,7 +90,7 @@ namespace GP1
 
         public Bitmap Draw()
         {
-            float width = 900;
+            float width = 1000;
             float height = 500;
 
             Bitmap bmp = new Bitmap((int)width, (int)height);
@@ -104,10 +104,10 @@ namespace GP1
 
         private void DrawNode(Tree.Node node, Graphics g, int depth, float x, float y, float imageWidth)
         {
-            Font font = new Font("Courier New", 12);
-            int rectWidth = 60;
-            int rectHeight = 30;
-            int distanceYBetweenNodes= 60;
+            Font font = new Font("Script", 14);
+            int rectWidth = 50;
+            int rectHeight = 20;
+            int distanceYBetweenNodes = rectHeight * 2;
             if (depth > 10) return; //only draw to depth 10;
 
             if (node is Tree.FunctionNode)
@@ -116,7 +116,7 @@ namespace GP1
                 g.DrawRectangle(Pens.Blue, x - (rectWidth / 2), y - (rectHeight / 2), rectWidth, rectHeight);
                 g.DrawString(functionNode.Function.Name, font, Brushes.Blue, x - 10, y - 10);
 
-                float nodeSplitting = (imageWidth / 4) / depth;
+                float nodeSplitting = (imageWidth / 2) * (float)Math.Pow(0.5, depth);
                 for (int i = 0; i < functionNode.Children.Length; i++)
                 {
                     float childX = x + (i == 0 ? -nodeSplitting : nodeSplitting);
@@ -142,6 +142,15 @@ namespace GP1
         private void DrawNode(Tree.Node m_TopNode)
         {
             throw new NotImplementedException();
+        }
+
+        // Number of nodes in program
+        public int Length
+        {
+            get
+            {
+                return m_TopNode.ChildrenCount;
+            }
         }
     }
 }

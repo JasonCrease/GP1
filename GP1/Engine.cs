@@ -8,7 +8,7 @@ namespace GP1
 {
     public class Engine
     {
-        public static Random s_Random = new Random(1234);
+        public static Random s_Random = new Random();
         public IFitnessFunction FitnessFunction { get; set; }
 
         private Tree.Variable[] m_Variables;
@@ -22,9 +22,9 @@ namespace GP1
 
         public Engine()
         {
-            m_Variables = new Tree.Variable[] { new Tree.Variable("X", 2) };
-            m_Functions = new Tree.Func[] { new Tree.FuncMultiply(), new Tree.FuncAdd() };
-            m_Values = new int[] { 0, 1, 2 };
+            m_Variables = new Tree.Variable[] { new Tree.Variable("N", -1000) };
+            m_Functions = new Tree.Func[] { new Tree.FuncMultiply(), new Tree.FuncAdd(), new Tree.FuncModulo(), new Tree.FuncSubtract() };
+            m_Values = new int[] { 0, 1 };
         }
 
         public Program CreateRandomProgram()

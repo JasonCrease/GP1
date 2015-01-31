@@ -32,32 +32,52 @@ namespace UI
         private Program m_Program;
         private Engine m_Engine;
 
+        private void buttonSearchRandomly_Click(object sender, RoutedEventArgs e)
+        {
+            float bestFitnessSoFar = 1000f;
+            int maxTrials = 1000000;
+            int trials = 0;
+
+            while (trials++ < maxTrials && bestFitnessSoFar > 0f)
+            {
+                Program program = m_Engine.CreateRandomProgram();
+                float fitness = new GP1.FitnessFunctionAlternatesGettingLarger().Evaluate(program);
+                if (fitness < bestFitnessSoFar)
+                {
+                    m_Program = program;
+                    bestFitnessSoFar = fitness;
+                }
+            }
+
+            DrawProgram(m_Program);
+            ShowFitness(m_Program);
+        }
+
         private void buttonGenRandProgram_Click(object sender, RoutedEventArgs e)
         {
-            m_Program = m_Engine.CreateRandomProgram();
-            RedrawProgram();
-            UpdateFitness();
+            Program program = m_Engine.CreateRandomProgram();
+            DrawProgram(program);
+            ShowFitness(program);
+            m_Program = program;
         }
 
         private void buttonMutateProgram_Click(object sender, RoutedEventArgs e)
         {
             m_Program.Mutate();
-            RedrawProgram();
-            UpdateFitness();
+            DrawProgram(m_Program);
+            ShowFitness(m_Program);
         }
 
-        private void UpdateFitness()
+        private void ShowFitness(Program program)
         {
-            labelFitness.Content = GP1.FitnessFunctionIsQuadratic.(m_Program).ToString("0.00");
+            labelFitness.Content = new GP1.FitnessFunctionAlternatesGettingLarger().Evaluate(program).ToString("0.00");
         }
 
-        private void RedrawProgram()
+        private void DrawProgram(Program program)
         {
-            Bitmap bmp = m_Program.Draw();
+            Bitmap bmp = program.Draw();
             imageProgram.Source = loadBitmap(bmp);
         }
-
-
 
         [DllImport("gdi32")]
         static extern int DeleteObject(IntPtr o);

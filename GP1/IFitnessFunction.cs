@@ -8,6 +8,6 @@ namespace GP1
 {
     public interface IFitnessFunction
     {
-        static double Evaluate(Program program);
+        float Evaluate(Program program);
     }
 }

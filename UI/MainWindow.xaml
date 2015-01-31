@@ -1,8 +1,16 @@
 ﻿<Window x:Class="UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="500" Width="766">
+        Title="GP1" Height="700" Width="966">
     <Grid>
-        
+        <StackPanel>
+            <Button Content="Generate random program" Name="buttonGenRandProgram" Click="buttonGenRandProgram_Click" Width="200"/>
+            <Button Content="Mutate program" Name="buttonMutateProgram" Click ="buttonMutateProgram_Click" Width="200"/>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Fitness"/>
+                <Label Content="0.0" Width="100" Name="labelFitness"/>
+            </StackPanel>
+            <Image Name ="imageProgram" Height="500" Width="900"/>
+        </StackPanel>
     </Grid>
 </Window>

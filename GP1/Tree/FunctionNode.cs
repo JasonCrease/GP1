@@ -11,6 +11,9 @@ namespace GP1.Tree
         private Node[] m_ChildNodes;
         private Func m_Function;
 
+        internal Node[] Children { get { return m_ChildNodes; } }
+        internal Func Function { get { return m_Function; } }
+
         public FunctionNode(Node[] childNodes, Func function)
         {
             m_ChildNodes = childNodes;

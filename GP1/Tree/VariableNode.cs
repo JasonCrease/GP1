@@ -10,6 +10,8 @@ namespace GP1.Tree
     {
         Variable m_Variable;
 
+        internal Variable Variable { get { return m_Variable; }}
+
         public VariableNode(Variable variable)
         {
             m_Variable = variable;

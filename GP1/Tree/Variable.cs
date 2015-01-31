@@ -23,6 +23,10 @@ namespace GP1.Tree
             {
                 return this.m_Value;
             }
+            set
+            {
+                this.m_Value = value;
+            }
         }
 
         public string Name

@@ -43,7 +43,7 @@ namespace GP1
                 fitness += Math.Abs(program.Result - desiredResult);
             }
 
-            fitness += program.Length / 4;
+            fitness += program.TreeSize / 4;
 
             return fitness;
         }

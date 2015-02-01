@@ -77,14 +77,17 @@ namespace GP1
 
         public void Mutate()
         {
-            int nodeNumToMutate = s_Random.Next(this.Length);
-            int currentNodeNum = 0;
-            Tree.Node nodeToMutate = m_TopNode.RecurseToNodeNumber(nodeNumToMutate, ref currentNodeNum);
-
-            if (nodeToMutate.ChildrenCount > 2)
+            if (this.TreeSize == 1)
             {
-                nodeToMutate.ChildrenCount = GenerateRandomNode(nodeToMutate.Depth);
+                m_TopNode = GenerateRandomNode(0);
+                return;
             }
+
+            int funcNumToMutate = s_Random.Next(m_TopNode.TreeSizeFunctionsOnly);
+            int currentFuncNum = 0;
+            Tree.FunctionNode funcToMutate = m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
+
+            funcToMutate.Children[0] = GenerateRandomNode(funcToMutate.Depth);
         }
 
         public void Crossover(Program prog2)
@@ -154,11 +157,11 @@ namespace GP1
         }
 
         // Number of nodes in program
-        public int Length
+        public int TreeSize
         {
             get
             {
-                return m_TopNode.ChildrenCount;
+                return m_TopNode.Treesize;
             }
         }
     }

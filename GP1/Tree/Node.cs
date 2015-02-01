@@ -11,28 +11,50 @@ namespace GP1.Tree
         public int Depth;
         public abstract int Evaluate();
 
-        public int ChildrenCount
+        // The total children under this node
+        public int Treesize
         {
             get
             {
-                int count = 0;
+                int count = 1;
 
                 if (this is Tree.FunctionNode)
                 {
                     FunctionNode thisNode = this as FunctionNode;
                     foreach (Node n in thisNode.Children)
                     {
-                        count += n.ChildrenCount;
+                        count += n.Treesize;
                     }
                 }
                 else
-                    count = 1;
+                    return 1;
 
-                return count + 1;
+                return count;
             }
         }
 
-        internal Tree.Node RecurseToNodeNumber(int nodeToMutate, ref int currentNodeNum)
+        public int TreeSizeFunctionsOnly
+        {
+            get
+            {
+                int count = 1;
+
+                if (this is Tree.FunctionNode)
+                {
+                    FunctionNode thisNode = this as FunctionNode;
+                    foreach (Node n in thisNode.Children)
+                    {
+                        count += n.TreeSizeFunctionsOnly;
+                    }
+                }
+                else
+                    return 0;
+
+                return count;
+            }
+        }
+
+        internal Tree.Node GetNodeNumber(int nodeToMutate, ref int currentNodeNum)
         {
             if(currentNodeNum == nodeToMutate)
                 return this;
@@ -44,9 +66,28 @@ namespace GP1.Tree
                     FunctionNode thisNode = this as FunctionNode;
                     foreach (Node n in thisNode.Children)
                     {
-                        Tree.Node posNode = RecurseToNodeNumber(nodeToMutate, ref currentNodeNum);
+                        Tree.Node posNode = GetNodeNumber(nodeToMutate, ref currentNodeNum);
                         if (posNode != null) return posNode;
                     }
+                }
+            }
+
+            return null;
+        }
+
+        internal Tree.FunctionNode GetFunctionNumber(int funcNumToMutate, ref int currentFuncNum)
+        {
+            if (this is Tree.FunctionNode)
+            {
+                FunctionNode thisFunc = this as FunctionNode;
+                if (currentFuncNum == funcNumToMutate)
+                    return thisFunc;
+                currentFuncNum++;
+
+                foreach (Node n in thisFunc.Children)
+                {
+                    Tree.FunctionNode posNode = n.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
+                    if (posNode != null) return posNode;
                 }
             }
 

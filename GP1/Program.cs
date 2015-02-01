@@ -65,6 +65,8 @@ namespace GP1
                     m_Functions[funcNum]);
             }
 
+            node.Depth = depth;
+
             return node;
         }
 
@@ -75,7 +77,14 @@ namespace GP1
 
         public void Mutate()
         {
-            throw new NotImplementedException();
+            int nodeNumToMutate = s_Random.Next(this.Length);
+            int currentNodeNum = 0;
+            Tree.Node nodeToMutate = m_TopNode.RecurseToNodeNumber(nodeNumToMutate, ref currentNodeNum);
+
+            if (nodeToMutate.ChildrenCount > 2)
+            {
+                nodeToMutate.ChildrenCount = GenerateRandomNode(nodeToMutate.Depth);
+            }
         }
 
         public void Crossover(Program prog2)

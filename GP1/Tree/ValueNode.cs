@@ -16,6 +16,11 @@ namespace GP1.Tree
             m_Value = value;
         }
 
+        public override Node CloneTree()
+        {
+            return new ValueNode(m_Value);
+        }
+
         public override int Evaluate()
         {
             return m_Value;

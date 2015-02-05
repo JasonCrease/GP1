@@ -29,7 +29,8 @@ namespace UI
             m_Engine = new Engine();
         }
 
-        private Program m_Program;
+        private Program m_Program1;
+        private Program m_Program2;
         private Engine m_Engine;
 
         private void buttonSearchRandomly_Click(object sender, RoutedEventArgs e)
@@ -44,28 +45,40 @@ namespace UI
                 float fitness = new GP1.FitnessFunctionAlternatesGettingLarger().Evaluate(program);
                 if (fitness < bestFitnessSoFar)
                 {
-                    m_Program = program;
+                    m_Program1 = program;
                     bestFitnessSoFar = fitness;
                 }
             }
 
-            DrawProgram(m_Program);
-            ShowFitness(m_Program);
+            DrawProgram(m_Program1, imageProgram1);
+            ShowFitness(m_Program1);
         }
 
-        private void buttonGenRandProgram_Click(object sender, RoutedEventArgs e)
+        private void buttonGenRandProgram1_Click(object sender, RoutedEventArgs e)
         {
             Program program = m_Engine.CreateRandomProgram();
-            DrawProgram(program);
+            DrawProgram(program, imageProgram1);
             ShowFitness(program);
-            m_Program = program;
+            m_Program1 = program;
         }
-
+        private void buttonGenRandProgram2_Click(object sender, RoutedEventArgs e)
+        {
+            Program program = m_Engine.CreateRandomProgram();
+            DrawProgram(program, imageProgram2);
+            ShowFitness(program);
+            m_Program2 = program;
+        }
+        private void buttonShowCrossoverProgram_Click(object sender, RoutedEventArgs e)
+        {
+            Program program = m_Program1.Crossover(m_Program2);
+            DrawProgram(program, imageProgram3);
+            ShowFitness(program);
+        }
         private void buttonMutateProgram_Click(object sender, RoutedEventArgs e)
         {
-            m_Program.Mutate();
-            DrawProgram(m_Program);
-            ShowFitness(m_Program);
+            m_Program1.Mutate();
+            DrawProgram(m_Program1, imageProgram3);
+            ShowFitness(m_Program1);
         }
 
         private void ShowFitness(Program program)
@@ -73,10 +86,10 @@ namespace UI
             labelFitness.Content = new GP1.FitnessFunctionAlternatesGettingLarger().Evaluate(program).ToString("0.00");
         }
 
-        private void DrawProgram(Program program)
+        private void DrawProgram(Program program, System.Windows.Controls.Image image)
         {
             Bitmap bmp = program.Draw();
-            imageProgram.Source = loadBitmap(bmp);
+            image.Source = loadBitmap(bmp);
         }
 
         [DllImport("gdi32")]

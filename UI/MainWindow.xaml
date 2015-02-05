@@ -1,17 +1,33 @@
 ﻿<Window x:Class="UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="GP1" Height="700" Width="1050">
+        Title="GP1" Height="690" Width="1250">
     <Grid>
         <StackPanel>
-            <Button Content="Search randomly  for program" Name="buttonSearchRandomly" Click="buttonSearchRandomly_Click" Width="200"/>
-            <Button Content="Generate random program" Name="buttonGenRandProgram" Click="buttonGenRandProgram_Click" Width="200"/>
-            <Button Content="Mutate program" Name="buttonMutateProgram" Click ="buttonMutateProgram_Click" Width="200"/>
+            <StackPanel Orientation="Horizontal">         
+                <Button Content="Search randomly for program" Name="buttonSearchRandomly" Click="buttonSearchRandomly_Click" Width="200"/>
+                <Button Content="Generate random program 1" Name="buttonGenRandProgram1" Click="buttonGenRandProgram1_Click" Width="200"/>
+                <Button Content="Generate random program 2" Name="buttonGenRandProgram2" Click="buttonGenRandProgram2_Click" Width="200"/>
+                <Button Content="Show crossover program" Name="buttonShowCrossoverProgram" Click="buttonShowCrossoverProgram_Click" Width="200"/>
+                <Button Content="Mutate program" Name="buttonMutateProgram" Click ="buttonMutateProgram_Click" Width="200"/>
+            </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Content="Fitness"/>
                 <Label Content="0.0" Width="100" Name="labelFitness"/>
             </StackPanel>
-            <Image Name ="imageProgram" Height="500" Width="1000"/>
+            <StackPanel Orientation="Horizontal">
+                <Border BorderBrush="Black" BorderThickness="2">
+                    <Image Name ="imageProgram1" Height="300" Width="600"/>
+                </Border>
+                <Border BorderBrush="Black" BorderThickness="2">
+                    <Image Name ="imageProgram2" Height="300" Width="600"/>
+                </Border>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Border BorderBrush="Black" BorderThickness="2" >
+                    <Image Name ="imageProgram3" Height="300" Width="600"/>
+                </Border>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

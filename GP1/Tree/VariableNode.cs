@@ -21,5 +21,10 @@ namespace GP1.Tree
         {
             return m_Variable.Value;
         }
+
+        public override Node CloneTree()
+        {
+            return new VariableNode(m_Variable);
+        }
     }
 }

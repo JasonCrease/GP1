@@ -87,12 +87,50 @@ namespace GP1
             int currentFuncNum = 0;
             Tree.FunctionNode funcToMutate = m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
 
-            funcToMutate.Children[0] = GenerateRandomNode(funcToMutate.Depth);
+            if (s_Random.Next(2) == 1)
+                funcToMutate.Children[0] = GenerateRandomNode(funcToMutate.Depth);
+            else
+                funcToMutate.Children[1] = GenerateRandomNode(funcToMutate.Depth);
         }
 
-        public void Crossover(Program prog2)
+        public Program Crossover(Program prog2)
         {
-            throw new NotImplementedException();
+            Program prog1Clone = this.CloneProgram();
+            Tree.Node nodeToTake = null;
+
+            if (prog2.TreeSize == 1)
+            {
+                nodeToTake = prog2.m_TopNode.CloneTree();
+            }
+            else
+            {
+                int funcNumToMutate = s_Random.Next(prog2.m_TopNode.TreeSizeFunctionsOnly);
+                int currentFuncNum = 0;
+                Tree.FunctionNode funcToMutate = prog2.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
+
+                if (s_Random.Next(2) == 1)
+                    nodeToTake = funcToMutate.Children[0].CloneTree();
+                else
+                    nodeToTake = funcToMutate.Children[1].CloneTree();
+            }
+
+            if (this.TreeSize == 1)
+            {
+                prog1Clone.m_TopNode = nodeToTake;
+            }
+            else
+            {
+                int funcNumToMutate = s_Random.Next(prog1Clone.m_TopNode.TreeSizeFunctionsOnly);
+                int currentFuncNum = 0;
+                Tree.FunctionNode funcToMutate = prog1Clone.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
+
+                if (s_Random.Next(2) == 1)
+                    funcToMutate.Children[0] = nodeToTake;
+                else
+                    funcToMutate.Children[1] = nodeToTake;
+            }
+
+            return prog1Clone;
         }
 
         public void Run()
@@ -163,6 +201,17 @@ namespace GP1
             {
                 return m_TopNode.Treesize;
             }
+        }
+
+        public Program CloneProgram()
+        {
+            Program p = new Program();
+            p.m_Functions = this.m_Functions;
+            p.m_Variables = this.m_Variables;
+            p.m_Values = this.m_Values;
+            p.m_TopNode = this.m_TopNode.CloneTree();
+
+            return p;
         }
     }
 }

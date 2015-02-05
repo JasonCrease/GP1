@@ -20,6 +20,16 @@ namespace GP1.Tree
             m_Function = function;
         }
 
+        public override Node CloneTree()
+        {
+            Node[] childNodes = new Node[m_ChildNodes.Length];
+
+            for (int i = 0; i < childNodes.Length; i++)
+                childNodes[i] = m_ChildNodes[i].CloneTree();
+
+            return new FunctionNode(childNodes, this.m_Function);
+        }
+
         public override int Evaluate()
         {
             return m_Function.Evaluate(m_ChildNodes);

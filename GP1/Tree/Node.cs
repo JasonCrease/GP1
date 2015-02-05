@@ -10,6 +10,7 @@ namespace GP1.Tree
     {
         public int Depth;
         public abstract int Evaluate();
+        public abstract Node CloneTree();
 
         // The total children under this node
         public int Treesize
@@ -93,5 +94,6 @@ namespace GP1.Tree
 
             return null;
         }
+
     }
 }

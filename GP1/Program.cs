@@ -60,7 +60,7 @@ namespace GP1
             else
             {
                 int funcNum = s_Random.Next(m_Functions.Length);
-                node = new Tree.FunctionNode(
+                node = new Tree.FuncNode(
                     new Tree.Node[] { GenerateRandomNode(depth + 1), GenerateRandomNode(depth + 1) }, 
                     m_Functions[funcNum]);
             }
@@ -70,9 +70,15 @@ namespace GP1
             return node;
         }
 
-        public void Clone()
+        public Program Clone()
         {
-            throw new NotImplementedException();
+            Program p = new Program();
+            p.m_Functions = this.m_Functions;
+            p.m_TopNode = this.m_TopNode.CloneTree();
+            p.m_Values = this.m_Values;
+            p.m_Variables = this.m_Variables;
+
+            return p;
         }
 
         public void Mutate()
@@ -85,7 +91,7 @@ namespace GP1
 
             int funcNumToMutate = s_Random.Next(m_TopNode.TreeSizeFunctionsOnly);
             int currentFuncNum = 0;
-            Tree.FunctionNode funcToMutate = m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
+            Tree.FuncNode funcToMutate = m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
 
             if (s_Random.Next(2) == 1)
                 funcToMutate.Children[0] = GenerateRandomNode(funcToMutate.Depth);
@@ -106,7 +112,7 @@ namespace GP1
             {
                 int funcNumToMutate = s_Random.Next(prog2.m_TopNode.TreeSizeFunctionsOnly);
                 int currentFuncNum = 0;
-                Tree.FunctionNode funcToMutate = prog2.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
+                Tree.FuncNode funcToMutate = prog2.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
 
                 if (s_Random.Next(2) == 1)
                     nodeToTake = funcToMutate.Children[0].CloneTree();
@@ -122,7 +128,7 @@ namespace GP1
             {
                 int funcNumToMutate = s_Random.Next(prog1Clone.m_TopNode.TreeSizeFunctionsOnly);
                 int currentFuncNum = 0;
-                Tree.FunctionNode funcToMutate = prog1Clone.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
+                Tree.FuncNode funcToMutate = prog1Clone.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
 
                 if (s_Random.Next(2) == 1)
                     funcToMutate.Children[0] = nodeToTake;
@@ -160,9 +166,9 @@ namespace GP1
             int distanceYBetweenNodes = rectHeight * 2;
             if (depth > 10) return; //only draw to depth 10;
 
-            if (node is Tree.FunctionNode)
+            if (node is Tree.FuncNode)
             {
-                Tree.FunctionNode functionNode = node as Tree.FunctionNode;
+                Tree.FuncNode functionNode = node as Tree.FuncNode;
                 g.DrawRectangle(Pens.Blue, x - (rectWidth / 2), y - (rectHeight / 2), rectWidth, rectHeight);
                 g.DrawString(functionNode.Function.Name, font, Brushes.Blue, x - 10, y - 10);
 

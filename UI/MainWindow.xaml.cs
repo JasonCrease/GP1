@@ -27,7 +27,7 @@ namespace UI
         {
             InitializeComponent();
             m_Engine = new Engine();
-            m_Engine.FitnessFunction = new FitnessFunctionAlternatesGettingLarger();
+            m_Engine.FitnessFunction = new FitnessFunctionIsQuadratic();
         }
 
         private Program m_Program1;
@@ -43,7 +43,7 @@ namespace UI
             while (trials++ < maxTrials && bestFitnessSoFar > 0f)
             {
                 Program program = m_Engine.CreateRandomProgram();
-                float fitness = new GP1.FitnessFunctionIsQuadratic().Evaluate(program);
+                float fitness = m_Engine.FitnessFunction.Evaluate(program);
                 if (fitness < bestFitnessSoFar)
                 {
                     m_Program1 = program;
@@ -91,7 +91,7 @@ namespace UI
 
         private void ShowFitness(Program program)
         {
-            labelFitness.Content = new GP1.FitnessFunctionAlternatesGettingLarger().Evaluate(program).ToString("0.00");
+            labelFitness.Content = m_Engine.FitnessFunction.Evaluate(program).ToString("0.00");
         }
 
         private void DrawProgram(Program program, System.Windows.Controls.Image image)

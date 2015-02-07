@@ -17,11 +17,11 @@ namespace GP1
             {
                 XVariable.Value = x;
                 program.Run();
-                float desiredResult = (x * x) + x + 2;
+                float desiredResult = (x * x) - x;
                 fitness += Math.Abs(program.Result - desiredResult);
             }
 
-            fitness += program.TreeSize / 2;
+            fitness += program.TreeSize / 5;
 
             return fitness;
         }
@@ -33,9 +33,9 @@ namespace GP1
         {
             Tree.Variable XVariable = program.m_Variables[0];
             float fitness = 0;
-            int[] Xs = new int[] { 2, 4, 6, 8};
+            int[] Xs = new int[] { 1, 2,6,12,20};
 
-            for (int x = 0; x < 4; x += 1)
+            for (int x = 0; x <5; x += 1)
             {
                 XVariable.Value = x;
                 program.Run();

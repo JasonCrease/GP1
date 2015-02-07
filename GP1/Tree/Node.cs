@@ -19,9 +19,9 @@ namespace GP1.Tree
             {
                 int count = 1;
 
-                if (this is Tree.FunctionNode)
+                if (this is Tree.FuncNode)
                 {
-                    FunctionNode thisNode = this as FunctionNode;
+                    FuncNode thisNode = this as FuncNode;
                     foreach (Node n in thisNode.Children)
                     {
                         count += n.Treesize;
@@ -40,9 +40,9 @@ namespace GP1.Tree
             {
                 int count = 1;
 
-                if (this is Tree.FunctionNode)
+                if (this is Tree.FuncNode)
                 {
-                    FunctionNode thisNode = this as FunctionNode;
+                    FuncNode thisNode = this as FuncNode;
                     foreach (Node n in thisNode.Children)
                     {
                         count += n.TreeSizeFunctionsOnly;
@@ -62,9 +62,9 @@ namespace GP1.Tree
             else
             {
                 currentNodeNum++;
-                if (this is Tree.FunctionNode)
+                if (this is Tree.FuncNode)
                 {
-                    FunctionNode thisNode = this as FunctionNode;
+                    FuncNode thisNode = this as FuncNode;
                     foreach (Node n in thisNode.Children)
                     {
                         Tree.Node posNode = GetNodeNumber(nodeToMutate, ref currentNodeNum);
@@ -76,18 +76,18 @@ namespace GP1.Tree
             return null;
         }
 
-        internal Tree.FunctionNode GetFunctionNumber(int funcNumToMutate, ref int currentFuncNum)
+        internal Tree.FuncNode GetFunctionNumber(int funcNumToMutate, ref int currentFuncNum)
         {
-            if (this is Tree.FunctionNode)
+            if (this is Tree.FuncNode)
             {
-                FunctionNode thisFunc = this as FunctionNode;
+                FuncNode thisFunc = this as FuncNode;
                 if (currentFuncNum == funcNumToMutate)
                     return thisFunc;
                 currentFuncNum++;
 
                 foreach (Node n in thisFunc.Children)
                 {
-                    Tree.FunctionNode posNode = n.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
+                    Tree.FuncNode posNode = n.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
                     if (posNode != null) return posNode;
                 }
             }

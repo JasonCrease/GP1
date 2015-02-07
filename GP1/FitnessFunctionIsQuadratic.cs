@@ -17,11 +17,11 @@ namespace GP1
             {
                 XVariable.Value = x;
                 program.Run();
-                float desiredResult = (x * x * x) + x + 2;
+                float desiredResult = (x * x) + x + 2;
                 fitness += Math.Abs(program.Result - desiredResult);
             }
 
-            //fitness += program.Length / 2;
+            fitness += program.TreeSize / 2;
 
             return fitness;
         }

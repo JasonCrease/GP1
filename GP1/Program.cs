@@ -25,6 +25,7 @@ namespace GP1
         public double Fitness
         {
             get { return m_Fitness; }
+            set { m_Fitness = value; }
         }
         public float Result
         {

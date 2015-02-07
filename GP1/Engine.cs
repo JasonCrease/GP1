@@ -22,20 +22,52 @@ namespace GP1
         {
             m_Progs = GetPopulation(TARGETPOPULATION);
 
-            for(int gen=0; gen<MAXGENERATIONS; gen++)
+            for (int gen = 0; gen < MAXGENERATIONS; gen++)
             {
-                List<Program> bestProgs = GetFittestPrograms(5);
-                m_Progs.AddRange(GenerateOffspring(bestProgs));
+                UpdateFitnesses();
+                CloneBestPrograms(5);
+                Program[] selectedParents = SelectParents(10);
+                GenerateOffspring(selectedParents);
                 AddMutatedPrograms(5);
-                RemoveWorstPrograms(15);
-                FillPopulation();
+
+                ManagePopulation();
             }
         }
 
-        private void AddMutatedPrograms(int size)
+        private void UpdateFitnesses()
+        {
+            foreach(Program p in m_Progs)
+                p.Fitness = FitnessFunction.Evaluate(p);
+        }
+
+        private Program[] SelectParents(int parentsToSelect)
+        {
+            return m_Progs.OrderByDescending(x => x.Fitness).Take(parentsToSelect).ToArray();
+        }
+
+        private void CloneBestPrograms(int numToClone)
+        {
+            var progsToClone = m_Progs.OrderBy(x => x.Fitness).Take(numToClone);
+            foreach (Program progToClone in progsToClone)
+                m_Progs.Add(progToClone.Clone());
+        }
+
+        private void GenerateOffspring(Program[] parents)
+        {
+            for (int parentNum = 0; parentNum < parents.Length; parentNum++)
+            {
+                Program parent1 = parents[parentNum];
+                parentNum++;
+                Program parent2 = parents[parentNum];
+                Program child = parent1.Crossover(parent2);
+                m_Progs.Add(child);
+            }
+        }
+
+        private void AddMutatedPrograms(int numToMutate)
         {
             int popSize = m_Progs.Count();
-            for(int i=0; i<size; i++)
+            for (int i = 0; i < popSize; i++)
             {
                 Program progToMutate = m_Progs[s_Random.Next(popSize)];
                 Program newProgram = progToMutate.Clone();
@@ -44,25 +76,24 @@ namespace GP1
             }
         }
 
-        private void FillPopulation()
+        /// <summary>
+        /// Kill off bad programs or add programs as necessary
+        /// </summary>
+        private void ManagePopulation()
         {
-            throw new NotImplementedException();
+            int popDiff = TARGETPOPULATION - m_Progs.Count();
+
+            if (popDiff > 0)
+                m_Progs.AddRange(GetPopulation(popDiff));
+            else if (popDiff < 0)
+            {
+                var programsToKill = m_Progs.OrderByDescending(x => x.Fitness).Take(-popDiff);
+
+                foreach (Program programToKill in programsToKill)
+                    m_Progs.Remove(programToKill);
+            }
         }
 
-        private void RemoveWorstPrograms(int size)
-        {
-            throw new NotImplementedException();
-        }
-
-        private IEnumerable<Program> GenerateOffspring(List<Program> parents)
-        {
-            throw new NotImplementedException();
-        }
-
-        private List<Program> GetFittestPrograms(int size)
-        {
-            throw new NotImplementedException();
-        }
 
         private List<Program> GetPopulation(int size)
         {
@@ -90,6 +121,11 @@ namespace GP1
         public void CreateRandomNode(Program program)
         {
             throw new NotImplementedException();
+        }
+
+        public Program GetStrongestProgram()
+        {
+            return m_Progs.OrderBy(x => x.Fitness).First();
         }
     }
 }

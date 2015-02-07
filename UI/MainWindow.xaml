@@ -4,7 +4,8 @@
         Title="GP1" Height="690" Width="1250">
     <Grid>
         <StackPanel>
-            <StackPanel Orientation="Horizontal">         
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Do evolution" Name="buttonDoEvolution" Click ="buttonDoEvolution_Click" Width="200"/>
                 <Button Content="Search randomly for program" Name="buttonSearchRandomly" Click="buttonSearchRandomly_Click" Width="200"/>
                 <Button Content="Generate random program 1" Name="buttonGenRandProgram1" Click="buttonGenRandProgram1_Click" Width="200"/>
                 <Button Content="Generate random program 2" Name="buttonGenRandProgram2" Click="buttonGenRandProgram2_Click" Width="200"/>

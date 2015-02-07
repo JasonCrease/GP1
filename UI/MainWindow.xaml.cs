@@ -27,6 +27,7 @@ namespace UI
         {
             InitializeComponent();
             m_Engine = new Engine();
+            m_Engine.FitnessFunction = new FitnessFunctionAlternatesGettingLarger();
         }
 
         private Program m_Program1;
@@ -42,7 +43,7 @@ namespace UI
             while (trials++ < maxTrials && bestFitnessSoFar > 0f)
             {
                 Program program = m_Engine.CreateRandomProgram();
-                float fitness = new GP1.FitnessFunctionAlternatesGettingLarger().Evaluate(program);
+                float fitness = new GP1.FitnessFunctionIsQuadratic().Evaluate(program);
                 if (fitness < bestFitnessSoFar)
                 {
                     m_Program1 = program;
@@ -54,6 +55,13 @@ namespace UI
             ShowFitness(m_Program1);
         }
 
+        private void buttonDoEvolution_Click(object sender, RoutedEventArgs e)
+        {
+            m_Engine.Run();
+            Program p = m_Engine.GetStrongestProgram();
+            DrawProgram(p, imageProgram1);
+            ShowFitness(p);
+        }
         private void buttonGenRandProgram1_Click(object sender, RoutedEventArgs e)
         {
             Program program = m_Engine.CreateRandomProgram();

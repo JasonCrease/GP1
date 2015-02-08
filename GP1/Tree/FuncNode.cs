@@ -14,6 +14,14 @@ namespace GP1.Tree
         internal Node[] Children { get { return m_ChildNodes; } }
         internal Func Function { get { return m_Function; } }
 
+        internal Node GetSimplifiedNode()
+        {
+            m_ChildNodes[0].Simplify();
+            m_ChildNodes[1].Simplify();
+
+            return m_Function.Simplify(m_ChildNodes);
+        }
+
         public FuncNode(Node[] childNodes, Func function)
         {
             m_ChildNodes = childNodes;

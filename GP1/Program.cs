@@ -14,7 +14,8 @@ namespace GP1
         private double m_Fitness;
         private float m_Result;
 
-        public Tree.Variable[] m_Variables;
+        private Tree.Variable[] m_Variables;
+        public Tree.Variable[] Variables { get { return m_Variables;  } }
         private Tree.Func[] m_Functions;
         private int[] m_Values;
         

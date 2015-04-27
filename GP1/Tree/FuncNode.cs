@@ -38,6 +38,10 @@ namespace GP1.Tree
             return new FuncNode(childNodes, this.m_Function);
         }
 
+        internal override void Simplify()
+        { throw new NotImplementedException();
+        }
+
         public override int Evaluate()
         {
             return m_Function.Evaluate(m_ChildNodes);

@@ -22,6 +22,10 @@ namespace GP1
 
         private static Random s_Random = new Random();
 
+        public Tree.Node TopNode
+        {
+            get { return m_TopNode; }
+        }
         public double Fitness
         {
             get { return m_Fitness; }

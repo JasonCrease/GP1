@@ -33,9 +33,9 @@ namespace GP1
         {
             Tree.Variable XVariable = program.m_Variables[0];
             float fitness = 0;
-            int[] Xs = new int[] { 1, 2,6,12,20};
+            int[] Xs = new int[] { 1, 2, 6, 12, 20 };
 
-            for (int x = 0; x <5; x += 1)
+            for (int x = 0; x < 5; x += 1)
             {
                 XVariable.Value = x;
                 program.Run();
@@ -43,7 +43,29 @@ namespace GP1
                 fitness += Math.Abs(program.Result - desiredResult);
             }
 
-            fitness += program.TreeSize / 4;
+            fitness += program.TreeSize / 2;
+
+            return fitness;
+        }
+    }
+
+    public class FitnessFunctionOneSometimesZeroes : IFitnessFunction
+    {
+        public float Evaluate(Program program)
+        {
+            Tree.Variable XVariable = program.m_Variables[0];
+            float fitness = 0;
+            int[] Ys = new int[] { 5, 5, 5, 5, 4, 5, 6, 7, 8, 9 };
+
+            for (int x = 0; x < 10; x += 1)
+            {
+                XVariable.Value = x;
+                program.Run();
+                float desiredResult = Ys[x];
+                fitness += Math.Abs(program.Result - desiredResult);
+            }
+
+            fitness += program.TreeSize / 5;
 
             return fitness;
         }

@@ -14,12 +14,23 @@ namespace GP1.Tree
         internal Node[] Children { get { return m_ChildNodes; } }
         internal Func Function { get { return m_Function; } }
 
-        internal Node GetSimplifiedNode()
+        internal override Node Simplify()
         {
-            m_ChildNodes[0].Simplify();
-            m_ChildNodes[1].Simplify();
+            bool areAllValueNodes = true;
 
-            return m_Function.Simplify(m_ChildNodes);
+            for (int i = 0; i < m_ChildNodes.Length; i++)
+            {
+                m_ChildNodes[i] = m_ChildNodes[i].Simplify();
+                if (!(m_ChildNodes[i] is ValueNode)) areAllValueNodes = false;
+            }
+
+            if (areAllValueNodes)
+            {
+                ValueNode thisNode = new ValueNode(this.Evaluate());
+                return thisNode;
+            }
+
+            return this;
         }
 
         public FuncNode(Node[] childNodes, Func function)
@@ -36,10 +47,6 @@ namespace GP1.Tree
                 childNodes[i] = m_ChildNodes[i].CloneTree();
 
             return new FuncNode(childNodes, this.m_Function);
-        }
-
-        internal override void Simplify()
-        { throw new NotImplementedException();
         }
 
         public override int Evaluate()

@@ -22,11 +22,6 @@ namespace GP1.Tree
         {
             get;
         }
-
-        internal Node Simplify(Node[] m_ChildNodes)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     public class FuncSubtract : Func

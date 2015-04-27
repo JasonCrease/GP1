@@ -17,9 +17,9 @@ namespace GP1.Tree
             m_Variable = variable;
         }
 
-        internal override void Simplify()
+        internal override Node Simplify()
         {
-            return;
+            return this;
         }
 
         public override int Evaluate()

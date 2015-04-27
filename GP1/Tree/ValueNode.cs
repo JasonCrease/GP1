@@ -16,9 +16,9 @@ namespace GP1.Tree
             m_Value = value;
         }
 
-        internal override void Simplify()
+        internal override Node Simplify()
         {
-            return;
+            return this;
         }
 
         public override Node CloneTree()

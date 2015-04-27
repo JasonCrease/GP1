@@ -55,7 +55,7 @@ namespace GP1.Tree
             }
         }
 
-        internal abstract void Simplify();
+        internal abstract Node Simplify();
 
         internal Tree.Node GetNodeNumber(int nodeToMutate, ref int currentNodeNum)
         {

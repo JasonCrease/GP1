@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compiler\Compiler.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="FitnessFunctions.cs" />
     <Compile Include="IFitnessFunction.cs" />
@@ -51,6 +52,9 @@
     <Compile Include="Tree\ValueNode.cs" />
     <Compile Include="Tree\Variable.cs" />
     <Compile Include="Tree\VariableNode.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Compiler\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

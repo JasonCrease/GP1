@@ -14,6 +14,25 @@ namespace GP1.Tree
         internal Node[] Children { get { return m_ChildNodes; } }
         internal Func Function { get { return m_Function; } }
 
+        internal override Node Simplify()
+        {
+            bool areAllValueNodes = true;
+
+            for (int i = 0; i < m_ChildNodes.Length; i++)
+            {
+                m_ChildNodes[i] = m_ChildNodes[i].Simplify();
+                if (!(m_ChildNodes[i] is ValueNode)) areAllValueNodes = false;
+            }
+
+            if (areAllValueNodes)
+            {
+                ValueNode thisNode = new ValueNode(this.Evaluate());
+                return thisNode;
+            }
+
+            return this;
+        }
+
         public FuncNode(Node[] childNodes, Func function)
         {
             m_ChildNodes = childNodes;

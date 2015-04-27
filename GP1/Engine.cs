@@ -15,7 +15,7 @@ namespace GP1
         private Tree.Func[] m_Functions;
         private int[] m_Values;
         private List<Program> m_Progs;
-        private const int MAXGENERATIONS = 1000;
+        private const int MAXGENERATIONS = 200;
         private const int TARGETPOPULATION = 500;
         private const float MUTATIONRATE = 0.02f;
         private const float REPRODUCTIONRATE = 0.1f;

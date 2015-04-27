@@ -27,7 +27,7 @@ namespace UI
         {
             InitializeComponent();
             m_Engine = new Engine();
-            m_Engine.FitnessFunction = new FitnessFunctionIsQuadratic();
+            m_Engine.FitnessFunction = new FitnessFunctionAlternatesGettingLarger();
         }
 
         private Program m_Program1;
@@ -37,7 +37,7 @@ namespace UI
         private void buttonSearchRandomly_Click(object sender, RoutedEventArgs e)
         {
             float bestFitnessSoFar = 1000f;
-            int maxTrials = 1000000;
+            int maxTrials = 100000;
             int trials = 0;
 
             while (trials++ < maxTrials && bestFitnessSoFar > 0f)
@@ -53,6 +53,8 @@ namespace UI
 
             DrawProgram(m_Program1, imageProgram1);
             ShowFitness(m_Program1);
+            GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
+            compiler.Compile(m_Program1, "Prog.dll");
         }
 
         private void buttonDoEvolution_Click(object sender, RoutedEventArgs e)

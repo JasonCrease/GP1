@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Engine.cs" />
-    <Compile Include="FitnessFunctionIsQuadratic.cs" />
+    <Compile Include="FitnessFunctions.cs" />
     <Compile Include="IFitnessFunction.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

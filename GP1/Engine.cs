@@ -17,7 +17,7 @@ namespace GP1
         private List<Program> m_Progs;
         private const int MAXGENERATIONS = 1000;
         private const int TARGETPOPULATION = 500;
-        private const float MUTATIONRATE = 0.01f;
+        private const float MUTATIONRATE = 0.02f;
         private const float REPRODUCTIONRATE = 0.1f;
 
         public void Run()
@@ -117,8 +117,10 @@ namespace GP1
         public Engine()
         {
             m_Variables = new Tree.Variable[] { new Tree.Variable("N", -1000) };
-            m_Functions = new Tree.Func[] { new Tree.FuncMultiply(), new Tree.FuncAdd(), new Tree.FuncModulo(), new Tree.FuncSubtract() };
-            m_Values = new int[] { 0, 1, 2 };
+            m_Functions = new Tree.Func[] { 
+                new Tree.FuncMultiply(), new Tree.FuncAdd(), new Tree.FuncModulo(), new Tree.FuncSubtract(), 
+                new Tree.FuncIf(Tree.Comparator.GreaterThan), new Tree.FuncIf(Tree.Comparator.Equal), new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual) };
+            m_Values = new int[] { 0, 1, 2, 3, 4 };
         }
 
         public Program CreateRandomProgram()

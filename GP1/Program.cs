@@ -57,13 +57,20 @@ namespace GP1
             {
                 int variableNum = s_Random.Next(m_Variables.Length);
                 node = new Tree.VariableNode(m_Variables[variableNum]);
-            } 
+            }
             else
             {
                 int funcNum = s_Random.Next(m_Functions.Length);
-                node = new Tree.FuncNode(
-                    new Tree.Node[] { GenerateRandomNode(depth + 1), GenerateRandomNode(depth + 1) }, 
-                    m_Functions[funcNum]);
+
+                if (m_Functions[funcNum].NumberOfArguments == 2)
+                    node = new Tree.FuncNode(
+                        new Tree.Node[] { GenerateRandomNode(depth + 1), GenerateRandomNode(depth + 1) },
+                        m_Functions[funcNum]);
+                else if (m_Functions[funcNum].NumberOfArguments == 4)
+                    node = new Tree.FuncNode(
+                        new Tree.Node[] { GenerateRandomNode(depth + 1), GenerateRandomNode(depth + 1), GenerateRandomNode(depth + 1), GenerateRandomNode(depth + 1) },
+                        m_Functions[funcNum]);
+                else throw new ApplicationException();
             }
 
             node.Depth = depth;
@@ -173,10 +180,12 @@ namespace GP1
                 g.DrawRectangle(Pens.Blue, x - (rectWidth / 2), y - (rectHeight / 2), rectWidth, rectHeight);
                 g.DrawString(functionNode.Function.Name, font, Brushes.Blue, x - 10, y - 10);
 
+                int numberOfChildren = functionNode.Children.Length;
                 float nodeSplitting = (imageWidth / 2) * (float)Math.Pow(0.5, depth);
-                for (int i = 0; i < functionNode.Children.Length; i++)
+
+                for (int i = 0; i < numberOfChildren; i++)
                 {
-                    float childX = x + (i == 0 ? -nodeSplitting : nodeSplitting);
+                    float childX = (x - nodeSplitting) + ((i * nodeSplitting * 2) / (numberOfChildren - 1));
                     g.DrawLine(Pens.Black, x, y + rectHeight / 2, childX, y + distanceYBetweenNodes - rectHeight / 2);
                     DrawNode(functionNode.Children[i], g, depth + 1, childX, y + distanceYBetweenNodes, imageWidth);
                 }

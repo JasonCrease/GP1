@@ -27,7 +27,7 @@ namespace UI
         {
             InitializeComponent();
             m_Engine = new Engine();
-            m_Engine.FitnessFunction = new FitnessFunctionAlternatesGettingLarger();
+            m_Engine.FitnessFunction = new FitnessFunctionOneSometimesZeroes();
         }
 
         private Program m_Program1;
@@ -63,6 +63,9 @@ namespace UI
             Program p = m_Engine.GetStrongestProgram();
             DrawProgram(p, imageProgram1);
             ShowFitness(p);
+
+            GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
+            compiler.Compile(p, "Prog.dll");
         }
         private void buttonGenRandProgram1_Click(object sender, RoutedEventArgs e)
         {
@@ -70,6 +73,9 @@ namespace UI
             DrawProgram(program, imageProgram1);
             ShowFitness(program);
             m_Program1 = program;
+
+            GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
+            compiler.Compile(m_Program1, "Prog.dll");
         }
         private void buttonGenRandProgram2_Click(object sender, RoutedEventArgs e)
         {

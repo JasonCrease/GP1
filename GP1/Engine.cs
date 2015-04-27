@@ -15,9 +15,9 @@ namespace GP1
         private Tree.Func[] m_Functions;
         private int[] m_Values;
         private List<Program> m_Progs;
-        private const int MAXGENERATIONS = 200;
-        private const int TARGETPOPULATION = 500;
-        private const float MUTATIONRATE = 0.02f;
+        private const int MAXGENERATIONS = 10000;
+        private const int TARGETPOPULATION = 1000;
+        private const float MUTATIONRATE = 0.03f;
         private const float REPRODUCTIONRATE = 0.1f;
 
         public void Run()
@@ -120,7 +120,7 @@ namespace GP1
             m_Functions = new Tree.Func[] { 
                 new Tree.FuncMultiply(), new Tree.FuncAdd(), new Tree.FuncModulo(), new Tree.FuncSubtract(), 
                 new Tree.FuncIf(Tree.Comparator.GreaterThan), new Tree.FuncIf(Tree.Comparator.Equal), new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual) };
-            m_Values = new int[] { 0, 1, 2, 3, 4 };
+            m_Values = new int[] { 0, 1, 2};
         }
 
         public Program CreateRandomProgram()
@@ -136,7 +136,10 @@ namespace GP1
 
         public Program GetStrongestProgram()
         {
-            return m_Progs.OrderBy(x => x.Fitness).First();
+            Program best = m_Progs.OrderBy(x => x.Fitness).First();
+            best.TopNode.Simplify();
+
+            return best;
         }
     }
 }

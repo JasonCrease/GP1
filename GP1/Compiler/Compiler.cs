@@ -32,13 +32,13 @@ namespace GP1.Compiler
             ModuleBuilder modb = asmb.DefineDynamicModule(moduleName);
             TypeBuilder typeBuilder = modb.DefineType("Program");
             MethodBuilder methb = typeBuilder.DefineMethod("Function", MethodAttributes.Static | MethodAttributes.Public, typeof(int), argTypes);
-
+ 
             // CodeGenerator 
             this.il = methb.GetILGenerator();
             this.symbolTable = new Dictionary<string, LocalBuilder>();
 
             // Go Compile 
-            GenerateParameters(Program.Variables);
+            GenerateParameters(methb, Program.Variables);
             GenerateStatement(Program.TopNode);
 
             il.Emit(OpCodes.Ret);
@@ -51,9 +51,10 @@ namespace GP1.Compiler
             this.il = null;
         }
 
-        private void GenerateParameters(Tree.Variable[] variables)
+        private void GenerateParameters(MethodBuilder methb, Tree.Variable[] variables)
         {
-
+            for (int i = 0; i < variables.Length; i++)
+                methb.DefineParameter(i, ParameterAttributes.HasDefault, variables[i].Name);
         }
 
         private void GenerateStatement(Tree.Node node)
@@ -89,18 +90,64 @@ namespace GP1.Compiler
             else if (node is Tree.FuncNode)
             {
                 Tree.FuncNode funcNode = node as Tree.FuncNode;
+                Tree.Func func = funcNode.Function;
 
-                foreach(Tree.Node child in funcNode.Children)
-                    GenerateStatement(child);
+                // For these simple maths functions, first emit the arguments
+                if (func is Tree.FuncAdd || func is Tree.FuncSubtract || func is Tree.FuncMultiply || func is Tree.FuncModulo)
+                {
+                    GenerateStatement(funcNode.Children[0]);
+                    GenerateStatement(funcNode.Children[1]);
+                }
 
-                if (funcNode.Function is Tree.FuncAdd)
+                if (func is Tree.FuncAdd)
+                {
                     il.Emit(OpCodes.Add);
-                else if (funcNode.Function is Tree.FuncMultiply)
+                }
+                else if (func is Tree.FuncMultiply)
+                {
                     il.Emit(OpCodes.Mul);
-                else if (funcNode.Function is Tree.FuncSubtract)
+                }
+                else if (func is Tree.FuncSubtract)
+                {
                     il.Emit(OpCodes.Sub);
-                else if (funcNode.Function is Tree.FuncModulo)
+                }
+                else if (func is Tree.FuncModulo)
+                {
                     il.Emit(OpCodes.Rem);
+                }
+                else if (func is Tree.FuncIf)
+                {
+                    Tree.FuncIf funcIf = func as Tree.FuncIf;
+
+                    // Output the first two statements - which we will be comparing
+                    GenerateStatement(funcNode.Children[0]);
+                    GenerateStatement(funcNode.Children[1]);
+                    
+                    Label equalLabel = il.DefineLabel();
+                    Label afterLabel = il.DefineLabel();
+
+                    OpCode conditionOpcode = OpCodes.Beq_S;
+                    if(funcIf.Comparator == Tree.Comparator.Equal) 
+                        conditionOpcode = OpCodes.Beq_S;
+                    else if(funcIf.Comparator == Tree.Comparator.GreaterThanOrEqual) 
+                        conditionOpcode = OpCodes.Bge_S;
+                    else if(funcIf.Comparator == Tree.Comparator.GreaterThan) 
+                        conditionOpcode = OpCodes.Bgt_S;
+                    else
+                        throw new ApplicationException();
+
+                    // If [condition], go to next bit. Otherwise do instruction 3, then go to end
+                    il.Emit(conditionOpcode, equalLabel);
+                    GenerateStatement(funcNode.Children[3]);
+                    il.Emit(OpCodes.Br_S, afterLabel);
+                    il.MarkLabel(equalLabel);
+                    GenerateStatement(funcNode.Children[2]);
+                    il.MarkLabel(afterLabel);
+
+                    LocalBuilder aLocal = il.DeclareLocal(typeof(Int32));
+                    il.Emit(OpCodes.Stloc, aLocal);
+                    il.Emit(OpCodes.Ldloc, aLocal);
+                }
                 else
                     throw new ApplicationException("Unknown function");
             }

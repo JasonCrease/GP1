@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GP1
@@ -15,10 +16,29 @@ namespace GP1
         private Tree.Func[] m_Functions;
         private int[] m_Values;
         private List<Program> m_Progs;
-        private const int MAXGENERATIONS = 10000;
-        private const int TARGETPOPULATION = 1000;
-        private const float MUTATIONRATE = 0.03f;
-        private const float REPRODUCTIONRATE = 0.1f;
+        private const int MAXGENERATIONS = 20000;
+        private const int TARGETPOPULATION = 500;
+        private const float MUTATIONRATE = 0.05f;
+        private const float REPRODUCTIONRATE = 0.2f;
+
+        private Thread m_RunThread;
+        private event EventHandler m_EvolutionDone;
+
+        private int m_Gen = 0;
+        public int CurrentGeneration
+        {
+            get { return m_Gen; }
+        }
+
+        public void RunAsync(EventHandler evolutionDone)
+        {
+            m_EvolutionDone = evolutionDone;
+            m_RunThread = new Thread(Run);
+            m_RunThread.IsBackground = true;
+            m_RunThread.Start();
+        }
+
+        private object m_LockObject = new object();
 
         public void Run()
         {
@@ -26,24 +46,28 @@ namespace GP1
             int numToMutate = (int)((float)TARGETPOPULATION * MUTATIONRATE);
             int numParents = (int)((float)TARGETPOPULATION * REPRODUCTIONRATE * 2f);
 
-            for (int gen = 0; gen < MAXGENERATIONS; gen++)
+            for (m_Gen = 0; m_Gen < MAXGENERATIONS; m_Gen++)
             {
-                UpdateFitnesses();
+                lock (m_LockObject)
+                {
+                    UpdateFitnesses();
 
-                CloneBestPrograms(5);
-                Program[] selectedParents = SelectParents(numParents);
-                GenerateOffspring(selectedParents);
-                AddMutatedPrograms(numToMutate);
+                    CloneBestPrograms(5);
+                    Program[] selectedParents = SelectParents(numParents);
+                    GenerateOffspring(selectedParents);
+                    AddMutatedPrograms(numToMutate);
 
-                ManagePopulation();
+                    ManagePopulation();
+                }
             }
 
             UpdateFitnesses();
+            m_EvolutionDone.Invoke(this, null);
         }
 
         private void UpdateFitnesses()
         {
-            foreach(Program p in m_Progs)
+            foreach (Program p in m_Progs)
                 p.Fitness = FitnessFunction.Evaluate(p);
         }
 
@@ -120,7 +144,7 @@ namespace GP1
             m_Functions = new Tree.Func[] { 
                 new Tree.FuncMultiply(), new Tree.FuncAdd(), new Tree.FuncModulo(), new Tree.FuncSubtract(), 
                 new Tree.FuncIf(Tree.Comparator.GreaterThan), new Tree.FuncIf(Tree.Comparator.Equal), new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual) };
-            m_Values = new int[] { 0, 1, 2};
+            m_Values = new int[] { 0, 1, 2 };
         }
 
         public Program CreateRandomProgram()
@@ -136,10 +160,16 @@ namespace GP1
 
         public Program GetStrongestProgram()
         {
-            Program best = m_Progs.OrderBy(x => x.Fitness).First();
-            best.TopNode.Simplify();
+            Program best = null;
+
+            lock (m_LockObject)
+            {
+                best = m_Progs.OrderBy(x => x.Fitness).First();
+                best.TopNode.Simplify();
+            }
 
             return best;
         }
+
     }
 }

@@ -27,7 +27,7 @@ namespace UI
         {
             InitializeComponent();
             m_Engine = new Engine();
-            m_Engine.FitnessFunction = new FitnessFunctionOneSometimesZeroes();
+            m_Engine.FitnessFunction = new FitnessFunctionAlternatesGettingLarger();
         }
 
         private Program m_Program1;
@@ -57,16 +57,34 @@ namespace UI
             compiler.Compile(m_Program1, "Prog.dll");
         }
 
-        private void buttonDoEvolution_Click(object sender, RoutedEventArgs e)
+        public void EvolutionDone(object sender, EventArgs e)
         {
-            m_Engine.Run();
             Program p = m_Engine.GetStrongestProgram();
-            DrawProgram(p, imageProgram1);
-            ShowFitness(p);
-
             GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
             compiler.Compile(p, "Prog.dll");
+
+            UpdateUiWhenEvolving(null);
         }
+
+        System.Threading.Timer updateUiTimer;
+
+        private void buttonDoEvolution_Click(object sender, RoutedEventArgs e)
+        {
+            m_Engine.RunAsync(EvolutionDone);
+            updateUiTimer = new System.Threading.Timer(UpdateUiWhenEvolving, null, 1000, 2000);
+        }
+
+        private void UpdateUiWhenEvolving(object state)
+        {
+            Dispatcher.Invoke(delegate {
+                labelGeneration.Content = "Generation: " + m_Engine.CurrentGeneration;
+                Program p = m_Engine.GetStrongestProgram();
+                DrawProgram(p, imageProgram1);
+                ShowFitness(p);
+                }
+            );
+        }
+
         private void buttonGenRandProgram1_Click(object sender, RoutedEventArgs e)
         {
             Program program = m_Engine.CreateRandomProgram();

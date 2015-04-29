@@ -73,7 +73,8 @@ namespace GP1.Compiler
                     il.Emit(OpCodes.Ldc_I4_3);
                 else if (valueNode.Value == 4)
                     il.Emit(OpCodes.Ldc_I4_4);
-                else throw new ApplicationException("Unknown value");
+                else
+                    il.Emit(OpCodes.Ldc_I4, valueNode.Value);
             }
             else if (node is Tree.VariableNode)
             {

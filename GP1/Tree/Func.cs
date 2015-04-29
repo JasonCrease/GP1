@@ -97,7 +97,7 @@ namespace GP1.Tree
             int nextNode1Value = nextNodes[1].Evaluate();
             if (nextNode1Value == 0) return 0;
 
-            return nextNodes[0].Evaluate() % nextNodes[1].Evaluate();
+            return nextNodes[0].Evaluate() % nextNode1Value;
         }
 
         public override int NumberOfArguments

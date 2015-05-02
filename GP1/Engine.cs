@@ -18,8 +18,8 @@ namespace GP1
         private List<Program> m_Progs;
         private const int MAXGENERATIONS = 10000;
         private const int TARGETPOPULATION = 500;
-        private const float MUTATIONRATE = 0.05f;
-        private const float REPRODUCTIONRATE = 0.2f;
+        private const float MUTATIONRATE = 0.02f;
+        private const float REPRODUCTIONRATE = 0.1f;
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -53,14 +53,11 @@ namespace GP1
                     UpdateFitnesses();
 
                     CloneBestPrograms(5);
-                    UpdateFitnesses();
                     Program[] selectedParents = SelectParents(numParents);
-                    UpdateFitnesses();
                     GenerateOffspring(selectedParents);
-                    UpdateFitnesses();
                     AddMutatedPrograms(numToMutate);
-                    UpdateFitnesses();
 
+                    UpdateFitnesses();
                     ManagePopulation();
                 }
             }
@@ -80,7 +77,18 @@ namespace GP1
 
         private Program[] SelectParents(int parentsToSelect)
         {
-            return m_Progs.OrderByDescending(x => x.Fitness).Take(parentsToSelect).ToArray();
+            Program[] selectedParents = new Program[parentsToSelect];
+            Program[] orderedPrograms = m_Progs.OrderByDescending(x => x.Fitness).ToArray();
+            int totalParents = orderedPrograms.Length;
+
+            // Pick parents randomly with a squared density, so better programs are more likely to be picked
+            for (int i = 0; i < parentsToSelect; i++)
+            {
+                int parentToPick = (int)(s_Random.NextDouble() * s_Random.NextDouble() * totalParents);
+                selectedParents[i] = orderedPrograms[parentToPick];
+            }
+
+            return selectedParents;
         }
 
         private void CloneBestPrograms(int numToClone)
@@ -147,10 +155,12 @@ namespace GP1
 
         public Engine()
         {
-            m_Variables = new Tree.Variable[] { new Tree.Variable("N", -1000) };
+            m_Variables = new Tree.Variable[] { new Tree.Variable("C1", -1000), new Tree.Variable("C2", -1000), new Tree.Variable("C3", -1000) };
             m_Functions = new Tree.Func[] { 
                 new Tree.FuncMultiply(), new Tree.FuncAdd(), new Tree.FuncModulo(), new Tree.FuncSubtract(), 
-                new Tree.FuncIf(Tree.Comparator.GreaterThan), new Tree.FuncIf(Tree.Comparator.Equal), new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual) };
+                new Tree.FuncIf(Tree.Comparator.GreaterThan), new Tree.FuncIf(Tree.Comparator.Equal), new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual),
+                //new Tree.FuncAdd(), new Tree.FuncAnd()
+            };
             m_Values = new int[] { 0, 1, 2 };
         }
 

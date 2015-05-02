@@ -27,7 +27,7 @@ namespace UI
         {
             InitializeComponent();
             m_Engine = new Engine();
-            m_Engine.FitnessFunction = new FitnessFunctionAlternatesGettingLarger();
+            m_Engine.FitnessFunction = new FitnessFunctionOneSometimesZeroes();
         }
 
         private Program m_Program1;
@@ -117,7 +117,7 @@ namespace UI
 
         private void ShowFitness(Program program)
         {
-            labelFitness.Content = m_Engine.FitnessFunction.Evaluate(program).ToString("0.00");
+            labelFitness.Content = program.Fitness.ToString("0.00");
         }
 
         private void DrawProgram(Program program, System.Windows.Controls.Image image)

@@ -16,7 +16,7 @@ namespace GP1
         private Tree.Func[] m_Functions;
         private int[] m_Values;
         private List<Program> m_Progs;
-        private const int MAXGENERATIONS = 20000;
+        private const int MAXGENERATIONS = 10000;
         private const int TARGETPOPULATION = 500;
         private const float MUTATIONRATE = 0.05f;
         private const float REPRODUCTIONRATE = 0.2f;
@@ -53,9 +53,13 @@ namespace GP1
                     UpdateFitnesses();
 
                     CloneBestPrograms(5);
+                    UpdateFitnesses();
                     Program[] selectedParents = SelectParents(numParents);
+                    UpdateFitnesses();
                     GenerateOffspring(selectedParents);
+                    UpdateFitnesses();
                     AddMutatedPrograms(numToMutate);
+                    UpdateFitnesses();
 
                     ManagePopulation();
                 }
@@ -68,7 +72,10 @@ namespace GP1
         private void UpdateFitnesses()
         {
             foreach (Program p in m_Progs)
-                p.Fitness = FitnessFunction.Evaluate(p);
+            {
+                if(p.FitnessIsDirty)
+                    p.Fitness = FitnessFunction.Evaluate(p);
+            }
         }
 
         private Program[] SelectParents(int parentsToSelect)
@@ -80,7 +87,7 @@ namespace GP1
         {
             var progsToClone = m_Progs.OrderBy(x => x.Fitness).Take(numToClone);
             foreach (Program progToClone in progsToClone)
-                m_Progs.Add(progToClone.Clone());
+                m_Progs.Add(progToClone.CloneProgram());
         }
 
         private void GenerateOffspring(Program[] parents)
@@ -101,7 +108,7 @@ namespace GP1
             for (int i = 0; i < numToMutate; i++)
             {
                 Program progToMutate = m_Progs[s_Random.Next(popSize)];
-                Program newProgram = progToMutate.Clone();
+                Program newProgram = progToMutate.CloneProgram();
                 newProgram.Mutate();
                 m_Progs.Add(newProgram);
             }
@@ -153,17 +160,13 @@ namespace GP1
             return p;
         }
 
-        public void CreateRandomNode(Program program)
-        {
-            throw new NotImplementedException();
-        }
-
         public Program GetStrongestProgram()
         {
             Program best = null;
 
             lock (m_LockObject)
             {
+                UpdateFitnesses();
                 best = m_Progs.OrderBy(x => x.Fitness).First();
                 best.TopNode.Simplify();
             }

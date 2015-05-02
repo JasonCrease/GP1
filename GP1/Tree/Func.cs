@@ -26,6 +26,48 @@ namespace GP1.Tree
         }
     }
 
+    public class FuncAnd : Func
+    {
+        public override int Evaluate(Node[] nextNodes)
+        {
+            return nextNodes[0].Evaluate() > 0 && nextNodes[1].Evaluate() > 0 ? 1 : 0;
+        }
+
+        public override int NumberOfArguments
+        {
+            get
+            {
+                return 2;
+            }
+        }
+
+        public override string Name
+        {
+            get { return "AND"; }
+        }
+    }
+
+    public class FuncOr : Func
+    {
+        public override int Evaluate(Node[] nextNodes)
+        {
+            return nextNodes[0].Evaluate() > 0 || nextNodes[1].Evaluate() > 0 ? 1 : 0;
+        }
+
+        public override int NumberOfArguments
+        {
+            get
+            {
+                return 2;
+            }
+        }
+
+        public override string Name
+        {
+            get { return "OR"; }
+        }
+    }
+
     public class FuncSubtract : Func
     {
         public override int Evaluate(Node[] nextNodes)

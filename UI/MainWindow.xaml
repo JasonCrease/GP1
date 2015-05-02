@@ -1,6 +1,7 @@
 ﻿<Window x:Class="UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Icon="./dna_helix.ico"
         Title="GP1" Height="690" Width="1250">
     <Grid>
         <StackPanel>

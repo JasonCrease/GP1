@@ -26,8 +26,7 @@ namespace UI
         public MainWindow()
         {
             InitializeComponent();
-            m_Engine = new Engine();
-            m_Engine.FitnessFunction = new FitnessFunctionIsItAStraight();
+            m_Engine = new Engine(new FitnessFunctionIsItAStraight());
         }
 
         private Program m_Program1;
@@ -36,14 +35,14 @@ namespace UI
 
         private void buttonSearchRandomly_Click(object sender, RoutedEventArgs e)
         {
-            float bestFitnessSoFar = 1000f;
+            double bestFitnessSoFar = 1000f;
             int maxTrials = 100000;
             int trials = 0;
 
             while (trials++ < maxTrials && bestFitnessSoFar > 0f)
             {
                 Program program = m_Engine.CreateRandomProgram();
-                float fitness = m_Engine.FitnessFunction.Evaluate(program);
+                double fitness = m_Engine.FitnessFunction.Evaluate(program);
                 if (fitness < bestFitnessSoFar)
                 {
                     m_Program1 = program;
@@ -61,7 +60,7 @@ namespace UI
         {
             Program p = m_Engine.GetStrongestProgram();
             GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
-            compiler.Compile(p, "Prog.dll");
+            //compiler.Compile(p, "Prog.dll");
 
             UpdateUiWhenEvolving(null);
         }
@@ -117,7 +116,7 @@ namespace UI
 
         private void ShowFitness(Program program)
         {
-            labelFitness.Content = program.Fitness.ToString("0.00");
+            labelFitness.Content = program.Fitness.ToString("0.000");
         }
 
         private void DrawProgram(Program program, System.Windows.Controls.Image image)

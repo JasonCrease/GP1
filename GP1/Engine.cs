@@ -10,7 +10,8 @@ namespace GP1
     public class Engine
     {
         public static Random s_Random = new Random();
-        public IFitnessFunction FitnessFunction { get; set; }
+        public IFitnessFunction FitnessFunction { get { return m_FitnessFunction; } }
+        public IFitnessFunction m_FitnessFunction;
 
         private Tree.Variable[] m_Variables;
         private Tree.Func[] m_Functions;
@@ -153,13 +154,18 @@ namespace GP1
             return ps;
         }
 
-        public Engine()
+        public Engine(IFitnessFunction fitnessFunction)
         {
-            m_Variables = new Tree.Variable[] { new Tree.Variable("C1", -1000), new Tree.Variable("C2", -1000), new Tree.Variable("C3", -1000) };
+            m_FitnessFunction = fitnessFunction;
+
+            m_Variables = new Tree.Variable[m_FitnessFunction.Variables.Length];
+            for (int i = 0; i < m_FitnessFunction.Variables.Length; i++)
+                m_Variables[i] = new Tree.Variable(m_FitnessFunction.Variables[i], -1000);
+
             m_Functions = new Tree.Func[] { 
                 new Tree.FuncMultiply(), new Tree.FuncAdd(), new Tree.FuncModulo(), new Tree.FuncSubtract(), 
                 new Tree.FuncIf(Tree.Comparator.GreaterThan), new Tree.FuncIf(Tree.Comparator.Equal), new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual),
-                //new Tree.FuncAdd(), new Tree.FuncAnd()
+               // new Tree.FuncAnd(), new Tree.FuncOr()
             };
             m_Values = new int[] { 0, 1, 2 };
         }
@@ -180,7 +186,7 @@ namespace GP1
                 best = m_Progs.OrderBy(x => x.Fitness).First();
                 best.TopNode.Simplify();
             }
-
+            
             return best;
         }
 

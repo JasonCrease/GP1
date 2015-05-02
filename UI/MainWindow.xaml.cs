@@ -27,7 +27,7 @@ namespace UI
         {
             InitializeComponent();
             m_Engine = new Engine();
-            m_Engine.FitnessFunction = new FitnessFunctionOneSometimesZeroes();
+            m_Engine.FitnessFunction = new FitnessFunctionIsItAStraight();
         }
 
         private Program m_Program1;
@@ -71,7 +71,7 @@ namespace UI
         private void buttonDoEvolution_Click(object sender, RoutedEventArgs e)
         {
             m_Engine.RunAsync(EvolutionDone);
-            updateUiTimer = new System.Threading.Timer(UpdateUiWhenEvolving, null, 1000, 2000);
+            updateUiTimer = new System.Threading.Timer(UpdateUiWhenEvolving, null, 1000, 1000);
         }
 
         private void UpdateUiWhenEvolving(object state)

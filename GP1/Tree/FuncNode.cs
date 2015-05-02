@@ -18,17 +18,43 @@ namespace GP1.Tree
         {
             bool areAllValueNodes = true;
 
+            // If all children are static values, just calculate this node and return
             for (int i = 0; i < m_ChildNodes.Length; i++)
             {
                 m_ChildNodes[i] = m_ChildNodes[i].Simplify();
                 if (!(m_ChildNodes[i] is ValueNode)) areAllValueNodes = false;
             }
-
             if (areAllValueNodes)
             {
                 ValueNode thisNode = new ValueNode(this.Evaluate());
                 return thisNode;
             }
+
+            // If this is an if statement, check for conditions that are always true
+            if (m_Function is FuncIf)
+            {
+                FuncIf funcAsIf = (FuncIf)m_Function;
+                if (Children[0] is ValueNode && Children[1] is ValueNode)
+                {
+                    if (funcAsIf.Compare(Children[0], Children[1]))
+                        return Children[2];
+                    else
+                        return Children[3];
+                }
+
+                if (Children[0] is VariableNode && Children[1] is VariableNode)
+                {
+                    if (Children[0] == Children[1])
+                    {
+                        if (funcAsIf.Comparator == Comparator.Equal || funcAsIf.Comparator == Comparator.GreaterThanOrEqual)
+                            return Children[2];
+                        else
+                            return Children[3];
+                    }
+                }
+
+            }
+
 
             return this;
         }

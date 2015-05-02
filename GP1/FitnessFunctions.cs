@@ -10,7 +10,7 @@ namespace GP1
     {
         public float Evaluate(Program program)
         {
-            Tree.Variable XVariable = program.m_Variables[0];
+            Tree.Variable XVariable = program.Variables[0];
             float fitness = 0;
 
             for (int x = -5; x < 5; x += 1)
@@ -31,7 +31,7 @@ namespace GP1
     {
         public float Evaluate(Program program)
         {
-            Tree.Variable XVariable = program.m_Variables[0];
+            Tree.Variable XVariable = program.Variables[0];
             float fitness = 0;
             int[] Xs = new int[] { 1, 2, 6, 12, 20 };
 
@@ -53,9 +53,9 @@ namespace GP1
     {
         public float Evaluate(Program program)
         {
-            Tree.Variable XVariable = program.m_Variables[0];
+            Tree.Variable XVariable = program.Variables[0];
             float fitness = 0;
-            int[] Ys = new int[] { 5, 5, 5, 5, 4, 5, 6, 7, 8, 9 };
+            int[] Ys = new int[] { 0, 2, -4, 6, -8, 10, -12, 14, -16, 18, -20 };
 
             for (int x = 0; x < 10; x += 1)
             {

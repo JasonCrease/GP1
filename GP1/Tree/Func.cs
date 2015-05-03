@@ -68,6 +68,27 @@ namespace GP1.Tree
         }
     }
 
+    public class FuncMax : Func
+    {
+        public override int Evaluate(Node[] nextNodes)
+        {
+            return Math.Max(nextNodes[0].Evaluate(), nextNodes[1].Evaluate());
+        }
+
+        public override int NumberOfArguments
+        {
+            get
+            {
+                return 2;
+            }
+        }
+
+        public override string Name
+        {
+            get { return "MAX"; }
+        }
+    }
+
     public class FuncSubtract : Func
     {
         public override int Evaluate(Node[] nextNodes)

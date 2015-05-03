@@ -26,11 +26,9 @@ namespace UI
         public MainWindow()
         {
             InitializeComponent();
-            m_Engine = new Engine(new FitnessFunctionIsItAStraight());
         }
 
         private Program m_Program1;
-        private Program m_Program2;
         private Engine m_Engine;
 
         private void buttonSearchRandomly_Click(object sender, RoutedEventArgs e)
@@ -51,7 +49,7 @@ namespace UI
             }
 
             DrawProgram(m_Program1, imageProgram1);
-            ShowFitness(m_Program1);
+            ShowStats(m_Program1);
             GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
             compiler.Compile(m_Program1, "Prog.dll");
         }
@@ -69,6 +67,7 @@ namespace UI
 
         private void buttonDoEvolution_Click(object sender, RoutedEventArgs e)
         {
+            m_Engine = new Engine(new FitnessFunction3CardPoker());
             m_Engine.RunAsync(EvolutionDone);
             updateUiTimer = new System.Threading.Timer(UpdateUiWhenEvolving, null, 1000, 1000);
         }
@@ -76,47 +75,21 @@ namespace UI
         private void UpdateUiWhenEvolving(object state)
         {
             Dispatcher.Invoke(delegate {
-                labelGeneration.Content = "Generation: " + m_Engine.CurrentGeneration;
-                Program p = m_Engine.GetStrongestProgram();
-                DrawProgram(p, imageProgram1);
-                ShowFitness(p);
+                    labelGeneration.Content = "Generation: " + m_Engine.CurrentGeneration;
+                    Program p = m_Engine.GetStrongestProgram();
+                    DrawProgram(p, imageProgram1);
+                    ShowStats(p);
                 }
             );
         }
 
-        private void buttonGenRandProgram1_Click(object sender, RoutedEventArgs e)
+        private void ShowStats(Program program)
         {
-            Program program = m_Engine.CreateRandomProgram();
-            DrawProgram(program, imageProgram1);
-            ShowFitness(program);
-            m_Program1 = program;
-
-            GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
-            compiler.Compile(m_Program1, "Prog.dll");
-        }
-        private void buttonGenRandProgram2_Click(object sender, RoutedEventArgs e)
-        {
-            Program program = m_Engine.CreateRandomProgram();
-            DrawProgram(program, imageProgram2);
-            ShowFitness(program);
-            m_Program2 = program;
-        }
-        private void buttonShowCrossoverProgram_Click(object sender, RoutedEventArgs e)
-        {
-            Program program = m_Program1.Crossover(m_Program2);
-            DrawProgram(program, imageProgram3);
-            ShowFitness(program);
-        }
-        private void buttonMutateProgram_Click(object sender, RoutedEventArgs e)
-        {
-            m_Program1.Mutate();
-            DrawProgram(m_Program1, imageProgram3);
-            ShowFitness(m_Program1);
-        }
-
-        private void ShowFitness(Program program)
-        {
-            labelFitness.Content = program.Fitness.ToString("0.000");
+            labelFitness.Content = program.Fitness.ToString("0.0");
+            label1stQuartile.Content = m_Engine.PopulationStatistics.FitnessFirstQuartile.ToString("0.0");
+            label2ndQuartile.Content = m_Engine.PopulationStatistics.FitnessSecondQuartile.ToString("0.0");
+            label3rdQuartile.Content = m_Engine.PopulationStatistics.FitnessThirdQuartile.ToString("0.0");
+            label4thQuartile.Content = m_Engine.PopulationStatistics.FitnessFourthQuartile.ToString("0.0");
         }
 
         private void DrawProgram(Program program, System.Windows.Controls.Image image)

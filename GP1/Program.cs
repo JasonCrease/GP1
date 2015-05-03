@@ -61,12 +61,12 @@ namespace GP1
             double randType = s_Random.NextDouble();
             Tree.Node node;
 
-            if (randType > 0.8 || depth == MAXPROGRAMDEPTH)
+            if (randType > 0.9 || depth == MAXPROGRAMDEPTH)
             {
                 int valueNum = s_Random.Next(m_Values.Length);
                 node = new Tree.ValueNode(m_Values[valueNum]);
             }
-            else if (randType > 0.6)
+            else if (randType > 0.7)
             {
                 int variableNum = s_Random.Next(m_Variables.Length);
                 node = new Tree.VariableNode(m_Variables[variableNum]);
@@ -104,24 +104,24 @@ namespace GP1
             return p;
         }
 
-        public void Mutate()
+        public Program Mutate()
         {
-            m_FitnessIsDirty = true;
+            Program retProg = this.CloneProgram();
 
             if (this.TreeSize == 1)
             {
-                m_TopNode = GenerateRandomNode(0);
-                return;
+                retProg.m_TopNode = GenerateRandomNode(0);
+                return retProg;
             }
 
-            int funcNumToMutate = s_Random.Next(m_TopNode.TreeSizeFunctionsOnly);
+            int funcNumToMutate = s_Random.Next(retProg.m_TopNode.TreeSizeFunctionsOnly);
             int currentFuncNum = 0;
-            Tree.FuncNode funcToMutate = m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
+            Tree.FuncNode funcToMutate = retProg.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
 
-            if (s_Random.Next(2) == 1)
-                funcToMutate.Children[0] = GenerateRandomNode(funcToMutate.Depth);
-            else
-                funcToMutate.Children[1] = GenerateRandomNode(funcToMutate.Depth);
+            int childToMutate = s_Random.Next(funcToMutate.Children.Length);
+            funcToMutate.Children[childToMutate] = GenerateRandomNode(funcToMutate.Depth);
+
+            return retProg;
         }
 
         public Program Crossover(Program prog2)
@@ -140,10 +140,8 @@ namespace GP1
                 int currentFuncNum = 0;
                 Tree.FuncNode funcToMutate = prog2.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
 
-                if (s_Random.Next(2) == 1)
-                    nodeToTake = funcToMutate.Children[0].CloneTree();
-                else
-                    nodeToTake = funcToMutate.Children[1].CloneTree();
+                int childToTake = s_Random.Next(funcToMutate.Children.Length);
+                nodeToTake = funcToMutate.Children[childToTake].CloneTree();
             }
 
             if (this.TreeSize == 1)
@@ -156,10 +154,8 @@ namespace GP1
                 int currentFuncNum = 0;
                 Tree.FuncNode funcToMutate = prog1Clone.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
 
-                if (s_Random.Next(2) == 1)
-                    funcToMutate.Children[0] = nodeToTake;
-                else
-                    funcToMutate.Children[1] = nodeToTake;
+                int childToTake = s_Random.Next(funcToMutate.Children.Length);
+                funcToMutate.Children[childToTake] = nodeToTake;
             }
 
             return prog1Clone;

@@ -75,7 +75,6 @@ namespace UI
         private void UpdateUiWhenEvolving(object state)
         {
             Dispatcher.Invoke(delegate {
-                    labelGeneration.Content = "Generation: " + m_Engine.CurrentGeneration;
                     Program p = m_Engine.GetStrongestProgram();
                     DrawProgram(p, imageProgram1);
                     ShowStats(p);
@@ -85,6 +84,7 @@ namespace UI
 
         private void ShowStats(Program program)
         {
+            labelGeneration.Content = m_Engine.CurrentGeneration;
             labelFitness.Content = program.Fitness.ToString("0.0");
             label1stQuartile.Content = m_Engine.PopulationStatistics.FitnessFirstQuartile.ToString("0.0");
             label2ndQuartile.Content = m_Engine.PopulationStatistics.FitnessSecondQuartile.ToString("0.0");

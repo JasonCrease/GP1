@@ -18,8 +18,8 @@ namespace GP1
         private int[] m_Values;
         private List<Program> m_Progs;
         private const int MAXGENERATIONS = 10000;
-        private const int TARGETPOPULATION = 500;
-        private const float MUTATIONRATE = 0.02f;
+        private const int TARGETPOPULATION = 1000;
+        private const float MUTATIONRATE = 0.01f;
         private const float CROSSOVERRATE = 0.1f;
 
         private Thread m_RunThread;
@@ -46,8 +46,6 @@ namespace GP1
         public void Run()
         {
             m_Progs = GetPopulation(TARGETPOPULATION);
-            int numToMutate = (int)((float)TARGETPOPULATION * MUTATIONRATE);
-            int numParents = (int)((float)TARGETPOPULATION * CROSSOVERRATE * 2f);
 
             for (m_Gen = 0; m_Gen < MAXGENERATIONS; m_Gen++)
             {
@@ -73,12 +71,17 @@ namespace GP1
             Program[] orderedPrograms = m_Progs.OrderBy(x => x.Fitness).ToArray();
             int existingProgsCount = orderedPrograms.Length;
 
-            // Always clone best X programs
-            for (int i = 0; i < 5; i++)
+            // Always reproduce best 2 programs
+            for (int i = 0; i < 2; i++)
             {
                 nextGenPrograms.Add(orderedPrograms[i]);
                 progsAdded++;
             }
+
+            // Always add 10 random programs
+            nextGenPrograms.AddRange(GetPopulation(10));
+            progsAdded += 10;
+            
 
             while (progsAdded < TARGETPOPULATION)
             {
@@ -103,7 +106,7 @@ namespace GP1
                 {
                     // Reproduction
                     int progToReproduce = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
-                    nextGenPrograms.Add(m_Progs[progToReproduce].CloneProgram());
+                    nextGenPrograms.Add(m_Progs[progToReproduce]);
                     progsAdded++;
                 }
             }

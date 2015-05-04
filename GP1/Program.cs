@@ -61,12 +61,12 @@ namespace GP1
             double randType = s_Random.NextDouble();
             Tree.Node node;
 
-            if (randType > 0.9 || depth == MAXPROGRAMDEPTH)
+            if (randType > 0.8 || depth == MAXPROGRAMDEPTH)
             {
                 int valueNum = s_Random.Next(m_Values.Length);
                 node = new Tree.ValueNode(m_Values[valueNum]);
             }
-            else if (randType > 0.7)
+            else if (randType > 0.6)
             {
                 int variableNum = s_Random.Next(m_Variables.Length);
                 node = new Tree.VariableNode(m_Variables[variableNum]);
@@ -164,6 +164,7 @@ namespace GP1
         public void Run()
         {
             m_Result = m_TopNode.Evaluate();
+            m_FitnessIsDirty = false;
         }
 
         public Bitmap Draw()

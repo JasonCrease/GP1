@@ -60,7 +60,7 @@ namespace GP1
                 program.Variables[1].Value = C[i, 2];
                 program.Run();
                 float desiredResult = C[i, 0];
-                fitness += (double)Math.Abs(program.Result - desiredResult);
+                fitness += program.Result == desiredResult ? 0 : 1;
             }
 
             fitness += (double)program.TreeSize / 20D;

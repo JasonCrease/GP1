@@ -17,11 +17,11 @@ namespace GP1
         }
 
         const int HANDSTODEAL = 200;
-        const int EACHTODEAL = 50;
         int[][] C = new int[HANDSTODEAL][];
 
         public FitnessFunction3CardPoker()
         {
+            int EACHTODEAL = HANDSTODEAL / 4;
             Random r = new Random(33);
 
             int straightsAdded = 0;
@@ -30,7 +30,7 @@ namespace GP1
             int unknownAdded = 0;
             int i = 0;
 
-            while (i < HANDSTODEAL)
+            while (i < HANDSTODEAL - 1)
             {
                 i = straightsAdded + threeKindAdded + twoKindAdded + unknownAdded;
                 C[i] = new int[4];
@@ -75,10 +75,10 @@ namespace GP1
                 program.Variables[2].Value = C[i][3];
                 program.Run();
                 float desiredResult = C[i][0];
-                fitness += (double)Math.Abs(program.Result - desiredResult);
+                fitness += program.Result == desiredResult ? 0 : 1;
             }
 
-            fitness += ((double)program.TreeSize * HANDSTODEAL) / 200f;
+            fitness += (double)program.TreeSize / 2D;
 
             return fitness;
         }

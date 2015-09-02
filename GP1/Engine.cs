@@ -16,9 +16,9 @@ namespace GP1
         private Tree.Func[] m_Functions;
         private int[] m_Values;
         private List<Program> m_Progs;
-        private const int MAXGENERATIONS = 20000;
-        private const int TARGETPOPULATION = 500;
-        private const float MUTATIONRATE = 0.05f;
+        private const int MAXGENERATIONS = 5000;
+        private const int TARGETPOPULATION = 200;
+        private const float MUTATIONRATE = 0.02f;
         private const float REPRODUCTIONRATE = 0.2f;
 
         private Thread m_RunThread;
@@ -140,11 +140,17 @@ namespace GP1
 
         public Engine()
         {
-            m_Variables = new Tree.Variable[] { new Tree.Variable("N", -1000) };
+            m_Variables = new Tree.Variable[]
+            {
+                new Tree.Variable("C11", -1000), 
+                new Tree.Variable("C12", -1000), 
+                new Tree.Variable("C21", -1000), 
+                new Tree.Variable("C22", -1000)
+            };
             m_Functions = new Tree.Func[] { 
-                new Tree.FuncMultiply(), new Tree.FuncAdd(), new Tree.FuncModulo(), new Tree.FuncSubtract(), 
-                new Tree.FuncIf(Tree.Comparator.GreaterThan), new Tree.FuncIf(Tree.Comparator.Equal), new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual) };
-            m_Values = new int[] { 0, 1, 2 };
+                //new Tree.FuncMultiply(), new Tree.FuncAdd(), new Tree.FuncModulo(), new Tree.FuncSubtract(), 
+                new Tree.FuncIf(Tree.Comparator.GreaterThan), new Tree.FuncIf(Tree.Comparator.Equal) };
+            m_Values = new int[] { -1, 0, 1 };
         }
 
         public Program CreateRandomProgram()
@@ -164,9 +170,12 @@ namespace GP1
 
             lock (m_LockObject)
             {
-                best = m_Progs.OrderBy(x => x.Fitness).First();
+                UpdateFitnesses();
+                best = m_Progs.OrderBy(x => x.Fitness).First().Clone();
                 best.TopNode.Simplify();
             }
+
+            best.Fitness = FitnessFunction.Evaluate(best);
 
             return best;
         }

@@ -19,7 +19,7 @@ namespace GP1
         private Tree.Func[] m_Functions;
         private int[] m_Values;
         
-        const int MAXPROGRAMDEPTH = 5;
+        const int MAXPROGRAMDEPTH = 7;
 
         private static Random s_Random = new Random();
 
@@ -159,8 +159,8 @@ namespace GP1
 
         public Bitmap Draw()
         {
-            float width = 1000;
-            float height = 500;
+            float width = 1200;
+            float height = 600;
 
             Bitmap bmp = new Bitmap((int)width, (int)height);
             Brush brush = Brushes.Black;

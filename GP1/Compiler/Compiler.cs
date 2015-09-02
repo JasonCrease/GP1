@@ -86,6 +86,13 @@ namespace GP1.Compiler
                     il.Emit(OpCodes.Ldarg_1);
                 else if (m_ArgTable[variableNode.Variable.Name] == 2)
                     il.Emit(OpCodes.Ldarg_2);
+                else if (m_ArgTable[variableNode.Variable.Name] == 3)
+                    il.Emit(OpCodes.Ldarg_3);
+                else if (m_ArgTable[variableNode.Variable.Name] == 4)
+                {
+                    il.Emit(OpCodes.Ldc_I4_4);
+                    il.Emit(OpCodes.Ldarg_S);
+                }
                 else throw new ApplicationException("Unknown argument");
             }
             else if (node is Tree.FuncNode)

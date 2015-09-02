@@ -22,25 +22,7 @@ namespace GP1.Tree
 
         public override int Evaluate(Node[] nextNodes)
         {
-            bool resultOfComparison = false;
-
-            if (m_Comparator == Comparator.Equal)
-            {
-                if (nextNodes[0].Evaluate() == nextNodes[1].Evaluate())
-                    resultOfComparison = true;
-            }
-            else if (m_Comparator == Comparator.GreaterThan)
-            {
-                if (nextNodes[0].Evaluate() > nextNodes[1].Evaluate())
-                    resultOfComparison = true;
-            }
-            else if (m_Comparator == Comparator.GreaterThanOrEqual)
-            {
-                if (nextNodes[0].Evaluate() >= nextNodes[1].Evaluate())
-                    resultOfComparison = true;
-            }
-            else
-                throw new ApplicationException();
+            bool resultOfComparison = Compare(nextNodes[0], nextNodes[1]);
 
             if (resultOfComparison)
                 return nextNodes[2].Evaluate();
@@ -69,6 +51,29 @@ namespace GP1.Tree
                 else
                     throw new ApplicationException();
             }
+        }
+
+        internal bool Compare(Node node0, Node node1)
+        {
+            if (m_Comparator == Comparator.Equal)
+            {
+                if (node0.Evaluate() == node1.Evaluate())
+                    return true;
+            }
+            else if (m_Comparator == Comparator.GreaterThan)
+            {
+                if (node0.Evaluate() > node1.Evaluate())
+                    return true;
+            }
+            else if (m_Comparator == Comparator.GreaterThanOrEqual)
+            {
+                if (node0.Evaluate() >= node1.Evaluate())
+                    return true;
+            }
+            else
+                throw new ApplicationException();
+
+            return false;
         }
     }
 }

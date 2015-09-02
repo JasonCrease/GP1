@@ -10,16 +10,18 @@ namespace GP1
     public class Engine
     {
         public static Random s_Random = new Random();
-        public IFitnessFunction FitnessFunction { get; set; }
+        public IFitnessFunction FitnessFunction { get { return m_FitnessFunction; } }
+        public IFitnessFunction m_FitnessFunction;
 
         private Tree.Variable[] m_Variables;
         private Tree.Func[] m_Functions;
         private int[] m_Values;
         private List<Program> m_Progs;
-        private const int MAXGENERATIONS = 5000;
-        private const int TARGETPOPULATION = 200;
-        private const float MUTATIONRATE = 0.02f;
-        private const float REPRODUCTIONRATE = 0.2f;
+
+        private const int MAXGENERATIONS = 10000;
+        private const int TARGETPOPULATION = 1000;
+        private const float MUTATIONRATE = 0.01f;
+        private const float CROSSOVERRATE = 0.1f;
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -39,25 +41,22 @@ namespace GP1
         }
 
         private object m_LockObject = new object();
+        private PopulationStatistics m_PopulationStatistics;
+        public PopulationStatistics PopulationStatistics { get { return m_PopulationStatistics; } }
 
         public void Run()
         {
             m_Progs = GetPopulation(TARGETPOPULATION);
-            int numToMutate = (int)((float)TARGETPOPULATION * MUTATIONRATE);
-            int numParents = (int)((float)TARGETPOPULATION * REPRODUCTIONRATE * 2f);
 
             for (m_Gen = 0; m_Gen < MAXGENERATIONS; m_Gen++)
             {
                 lock (m_LockObject)
                 {
+                    m_Progs = GenerateNextGeneration();
                     UpdateFitnesses();
 
-                    CloneBestPrograms(5);
-                    Program[] selectedParents = SelectParents(numParents);
-                    GenerateOffspring(selectedParents);
-                    AddMutatedPrograms(numToMutate);
-
-                    ManagePopulation();
+                    if (m_Gen % 100 == 0)
+                        m_PopulationStatistics = new PopulationStatistics(m_Progs);
                 }
             }
 
@@ -65,68 +64,65 @@ namespace GP1
             m_EvolutionDone.Invoke(this, null);
         }
 
+        private List<Program> GenerateNextGeneration()
+        {
+            List<Program> nextGenPrograms = new List<Program>();
+            int progsAdded = 0;
+
+            Program[] orderedPrograms = m_Progs.OrderBy(x => x.Fitness).ToArray();
+            int existingProgsCount = orderedPrograms.Length;
+
+            // Always reproduce best 2 programs
+            for (int i = 0; i < 2; i++)
+            {
+                nextGenPrograms.Add(orderedPrograms[i]);
+                progsAdded++;
+            }
+
+            // Always add 10 random programs
+            nextGenPrograms.AddRange(GetPopulation(10));
+            progsAdded += 10;
+            
+
+            while (progsAdded < TARGETPOPULATION)
+            {
+                double operation = s_Random.NextDouble();
+
+                if(operation < MUTATIONRATE)
+                {
+                    // Mutation
+                    int progToMutate = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
+                    nextGenPrograms.Add(m_Progs[progToMutate].Mutate());
+                    progsAdded++;
+                }
+                else if (operation < MUTATIONRATE + CROSSOVERRATE)
+                {
+                    // Crossover
+                    int parent1 = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
+                    int parent2 = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
+                    nextGenPrograms.Add(m_Progs[parent1].Crossover(m_Progs[parent2]));
+                    progsAdded++;
+                }
+                else
+                {
+                    // Reproduction
+                    int progToReproduce = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
+                    nextGenPrograms.Add(m_Progs[progToReproduce]);
+                    progsAdded++;
+                }
+            }
+
+            return nextGenPrograms;
+        }
+
         private void UpdateFitnesses()
         {
             foreach (Program p in m_Progs)
-                p.Fitness = FitnessFunction.Evaluate(p);
-        }
-
-        private Program[] SelectParents(int parentsToSelect)
-        {
-            return m_Progs.OrderByDescending(x => x.Fitness).Take(parentsToSelect).ToArray();
-        }
-
-        private void CloneBestPrograms(int numToClone)
-        {
-            var progsToClone = m_Progs.OrderBy(x => x.Fitness).Take(numToClone);
-            foreach (Program progToClone in progsToClone)
-                m_Progs.Add(progToClone.Clone());
-        }
-
-        private void GenerateOffspring(Program[] parents)
-        {
-            for (int parentNum = 0; parentNum < parents.Length; parentNum++)
             {
-                Program parent1 = parents[parentNum];
-                parentNum++;
-                Program parent2 = parents[parentNum];
-                Program child = parent1.Crossover(parent2);
-                m_Progs.Add(child);
+                if(p.FitnessIsDirty)
+                    p.Fitness = FitnessFunction.Evaluate(p);
             }
         }
-
-        private void AddMutatedPrograms(int numToMutate)
-        {
-            int popSize = m_Progs.Count();
-            for (int i = 0; i < numToMutate; i++)
-            {
-                Program progToMutate = m_Progs[s_Random.Next(popSize)];
-                Program newProgram = progToMutate.Clone();
-                newProgram.Mutate();
-                m_Progs.Add(newProgram);
-            }
-        }
-
-        /// <summary>
-        /// Kill off bad programs or add programs as necessary
-        /// </summary>
-        private void ManagePopulation()
-        {
-            int numToKill = 5;
-            int numToCreate = 5;
-            int popDiff = m_Progs.Count() - TARGETPOPULATION;
-
-            if (popDiff > 0) numToKill += popDiff;
-            if (popDiff < 0) numToCreate -= popDiff;
-
-            var programsToKill = m_Progs.OrderByDescending(x => x.Fitness).Take(numToKill);
-
-            foreach (Program programToKill in programsToKill)
-                m_Progs.Remove(programToKill);
-
-            m_Progs.AddRange(GetPopulation(numToCreate));
-        }
-
 
         private List<Program> GetPopulation(int size)
         {
@@ -138,30 +134,29 @@ namespace GP1
             return ps;
         }
 
-        public Engine()
+        public Engine(IFitnessFunction fitnessFunction)
         {
-            m_Variables = new Tree.Variable[]
-            {
-                new Tree.Variable("C11", -1000), 
-                new Tree.Variable("C12", -1000), 
-                new Tree.Variable("C21", -1000), 
-                new Tree.Variable("C22", -1000)
-            };
+            m_FitnessFunction = fitnessFunction;
+
+            m_Variables = new Tree.Variable[m_FitnessFunction.Variables.Length];
+            for (int i = 0; i < m_FitnessFunction.Variables.Length; i++)
+                m_Variables[i] = new Tree.Variable(m_FitnessFunction.Variables[i], -1000);
+
             m_Functions = new Tree.Func[] { 
-                //new Tree.FuncMultiply(), new Tree.FuncAdd(), new Tree.FuncModulo(), new Tree.FuncSubtract(), 
-                new Tree.FuncIf(Tree.Comparator.GreaterThan), new Tree.FuncIf(Tree.Comparator.Equal) };
-            m_Values = new int[] { -1, 0, 1 };
+                new Tree.FuncMultiply(), new Tree.FuncAdd(), new Tree.FuncModulo(), new Tree.FuncSubtract(), 
+                //new Tree.FuncMax(), 
+                //new Tree.FuncIf(Tree.Comparator.GreaterThan), 
+                new Tree.FuncIf(Tree.Comparator.Equal), 
+                //new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual),
+                //new Tree.FuncAnd(), new Tree.FuncOr()
+            };
+            m_Values = new int[] { 0, 1, 2 };
         }
 
         public Program CreateRandomProgram()
         {
             Program p = Program.GenerateRandomProgram(m_Variables, m_Functions, m_Values);
             return p;
-        }
-
-        public void CreateRandomNode(Program program)
-        {
-            throw new NotImplementedException();
         }
 
         public Program GetStrongestProgram()
@@ -171,12 +166,10 @@ namespace GP1
             lock (m_LockObject)
             {
                 UpdateFitnesses();
-                best = m_Progs.OrderBy(x => x.Fitness).First().Clone();
+                best = m_Progs.OrderBy(x => x.Fitness).First();
                 best.TopNode.Simplify();
             }
-
-            best.Fitness = FitnessFunction.Evaluate(best);
-
+            
             return best;
         }
 

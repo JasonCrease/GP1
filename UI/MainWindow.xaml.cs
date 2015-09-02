@@ -26,21 +26,41 @@ namespace UI
         public MainWindow()
         {
             InitializeComponent();
-            m_Engine = new Engine();
-            m_Engine.FitnessFunction = new FitnessFunctionCards();
         }
 
         private Program m_Program1;
-        private Program m_Program2;
         private Engine m_Engine;
-        
+
+        private void buttonSearchRandomly_Click(object sender, RoutedEventArgs e)
+        {
+            double bestFitnessSoFar = 1000f;
+            int maxTrials = 100000;
+            int trials = 0;
+
+            while (trials++ < maxTrials && bestFitnessSoFar > 0f)
+            {
+                Program program = m_Engine.CreateRandomProgram();
+                double fitness = m_Engine.FitnessFunction.Evaluate(program);
+                if (fitness < bestFitnessSoFar)
+                {
+                    m_Program1 = program;
+                    bestFitnessSoFar = fitness;
+                }
+            }
+
+            DrawProgram(m_Program1, imageProgram1);
+            ShowStats(m_Program1);
+            GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
+            compiler.Compile(m_Program1, "Prog.dll");
+        }
+
         public void EvolutionDone(object sender, EventArgs e)
         {
             updateUiTimer.Dispose();
 
             Program p = m_Engine.GetStrongestProgram();
             GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
-            compiler.Compile(p, "Prog.dll");
+            //compiler.Compile(p, "Prog.dll");
 
             UpdateUiWhenEvolving(null);
         }
@@ -49,24 +69,29 @@ namespace UI
 
         private void buttonDoEvolution_Click(object sender, RoutedEventArgs e)
         {
+            m_Engine = new Engine(new FitnessFunction3CardPoker());
             m_Engine.RunAsync(EvolutionDone);
-            updateUiTimer = new System.Threading.Timer(UpdateUiWhenEvolving, null, 1000, 2000);
+            updateUiTimer = new System.Threading.Timer(UpdateUiWhenEvolving, null, 1000, 1000);
         }
 
         private void UpdateUiWhenEvolving(object state)
         {
             Dispatcher.Invoke(delegate {
-                labelGeneration.Content = "Generation: " + m_Engine.CurrentGeneration;
-                Program p = m_Engine.GetStrongestProgram();
-                DrawProgram(p, imageProgram1);
-                ShowFitness(p);
+                    Program p = m_Engine.GetStrongestProgram();
+                    DrawProgram(p, imageProgram1);
+                    ShowStats(p);
                 }
             );
         }
-        
-        private void ShowFitness(Program program)
+
+        private void ShowStats(Program program)
         {
-            labelFitness.Content = program.Fitness.ToString("0.00");
+            labelGeneration.Content = m_Engine.CurrentGeneration;
+            labelFitness.Content = program.Fitness.ToString("0.0");
+            label1stQuartile.Content = m_Engine.PopulationStatistics.FitnessFirstQuartile.ToString("0.0");
+            label2ndQuartile.Content = m_Engine.PopulationStatistics.FitnessSecondQuartile.ToString("0.0");
+            label3rdQuartile.Content = m_Engine.PopulationStatistics.FitnessThirdQuartile.ToString("0.0");
+            label4thQuartile.Content = m_Engine.PopulationStatistics.FitnessFourthQuartile.ToString("0.0");
         }
 
         private void DrawProgram(Program program, System.Windows.Controls.Image image)

@@ -14,14 +14,18 @@ namespace GP1
         private double m_Fitness;
         private float m_Result;
 
-        private Tree.Variable[] m_Variables;
-        public Tree.Variable[] Variables { get { return m_Variables;  } }
         private Tree.Func[] m_Functions;
         private int[] m_Values;
-        
+
+        private Tree.Variable[] m_Variables;
+        public Tree.Variable[] Variables { get { return m_Variables;  } }
+
         const int MAXPROGRAMDEPTH = 7;
 
         private static Random s_Random = new Random();
+
+        private bool m_FitnessIsDirty = true;
+        public bool FitnessIsDirty { get { return m_FitnessIsDirty; } }
 
         public Tree.Node TopNode
         {
@@ -30,7 +34,10 @@ namespace GP1
         public double Fitness
         {
             get { return m_Fitness; }
-            set { m_Fitness = value; }
+            set {
+                    m_Fitness = value;
+                    m_FitnessIsDirty = false;
+                }
         }
         public float Result
         {
@@ -40,6 +47,7 @@ namespace GP1
         public static Program GenerateRandomProgram(Tree.Variable[] variables, Tree.Func[] functions, int[] values)
         {
             Program p = new Program();
+            p.m_FitnessIsDirty = true;
             p.m_Functions = functions;
             p.m_Values = values;
             p.m_Variables = variables;
@@ -50,10 +58,11 @@ namespace GP1
 
         private Tree.Node GenerateRandomNode(int depth)
         {
+            m_FitnessIsDirty = true;
             double randType = s_Random.NextDouble();
             Tree.Node node;
 
-            if (randType > 0.9 || depth == MAXPROGRAMDEPTH)
+            if (randType > 0.8 || depth == MAXPROGRAMDEPTH)
             {
                 int valueNum = s_Random.Next(m_Values.Length);
                 node = new Tree.ValueNode(m_Values[valueNum]);
@@ -83,37 +92,42 @@ namespace GP1
             return node;
         }
 
-        public Program Clone()
+        public Program CloneProgram()
         {
             Program p = new Program();
+            p.m_FitnessIsDirty = this.m_FitnessIsDirty;
+            p.m_Fitness = this.m_Fitness;
             p.m_Functions = this.m_Functions;
-            p.m_TopNode = this.m_TopNode.CloneTree();
-            p.m_Values = this.m_Values;
             p.m_Variables = this.m_Variables;
+            p.m_Values = this.m_Values;
+            p.m_TopNode = this.m_TopNode.CloneTree();
 
             return p;
         }
 
-        public void Mutate()
+        public Program Mutate()
         {
+            Program retProg = this.CloneProgram();
+
             if (this.TreeSize == 1)
             {
-                m_TopNode = GenerateRandomNode(0);
-                return;
+                retProg.m_TopNode = GenerateRandomNode(0);
+                return retProg;
             }
 
-            int funcNumToMutate = s_Random.Next(m_TopNode.TreeSizeFunctionsOnly);
+            int funcNumToMutate = s_Random.Next(retProg.m_TopNode.TreeSizeFunctionsOnly);
             int currentFuncNum = 0;
-            Tree.FuncNode funcToMutate = m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
+            Tree.FuncNode funcToMutate = retProg.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
 
-            if (s_Random.Next(2) == 1)
-                funcToMutate.Children[0] = GenerateRandomNode(funcToMutate.Depth);
-            else
-                funcToMutate.Children[1] = GenerateRandomNode(funcToMutate.Depth);
+            int childToMutate = s_Random.Next(funcToMutate.Children.Length);
+            funcToMutate.Children[childToMutate] = GenerateRandomNode(funcToMutate.Depth);
+
+            return retProg;
         }
 
         public Program Crossover(Program prog2)
         {
+            m_FitnessIsDirty = true;
             Program prog1Clone = this.CloneProgram();
             Tree.Node nodeToTake = null;
 
@@ -127,10 +141,8 @@ namespace GP1
                 int currentFuncNum = 0;
                 Tree.FuncNode funcToMutate = prog2.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
 
-                if (s_Random.Next(2) == 1)
-                    nodeToTake = funcToMutate.Children[0].CloneTree();
-                else
-                    nodeToTake = funcToMutate.Children[1].CloneTree();
+                int childToTake = s_Random.Next(funcToMutate.Children.Length);
+                nodeToTake = funcToMutate.Children[childToTake].CloneTree();
             }
 
             if (this.TreeSize == 1)
@@ -143,10 +155,8 @@ namespace GP1
                 int currentFuncNum = 0;
                 Tree.FuncNode funcToMutate = prog1Clone.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum);
 
-                if (s_Random.Next(2) == 1)
-                    funcToMutate.Children[0] = nodeToTake;
-                else
-                    funcToMutate.Children[1] = nodeToTake;
+                int childToTake = s_Random.Next(funcToMutate.Children.Length);
+                funcToMutate.Children[childToTake] = nodeToTake;
             }
 
             return prog1Clone;
@@ -155,6 +165,7 @@ namespace GP1
         public void Run()
         {
             m_Result = m_TopNode.Evaluate();
+            m_FitnessIsDirty = false;
         }
 
         public Bitmap Draw()
@@ -171,7 +182,7 @@ namespace GP1
             return bmp;
         }
 
-        private void DrawNode(Tree.Node node, Graphics g, int depth, float x, float y, float imageWidth)
+        private static void DrawNode(Tree.Node node, Graphics g, int depth, float x, float y, float imageWidth)
         {
             Font font = new Font("Script", 14);
             int rectWidth = 50;
@@ -210,11 +221,6 @@ namespace GP1
             else throw new ApplicationException();
         }
 
-        private void DrawNode(Tree.Node m_TopNode)
-        {
-            throw new NotImplementedException();
-        }
-
         // Number of nodes in program
         public int TreeSize
         {
@@ -222,17 +228,6 @@ namespace GP1
             {
                 return m_TopNode.Treesize;
             }
-        }
-
-        public Program CloneProgram()
-        {
-            Program p = new Program();
-            p.m_Functions = this.m_Functions;
-            p.m_Variables = this.m_Variables;
-            p.m_Values = this.m_Values;
-            p.m_TopNode = this.m_TopNode.CloneTree();
-
-            return p;
         }
     }
 }

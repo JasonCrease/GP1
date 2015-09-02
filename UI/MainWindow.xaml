@@ -1,21 +1,51 @@
 ﻿<Window x:Class="UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="GP1" Height="690" Width="1250">
+        Icon="./dna_helix.ico"
+        Title="GP1" Height="800" Width="1400">
     <Grid>
-        <StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Generation: 0" Name="labelGeneration" Width="150"/>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Vertical">
                 <Button Content="Do evolution" Name="buttonDoEvolution" Click ="buttonDoEvolution_Click" Width="200"/>
+
+                <Button Content="Search randomly for program" Name="buttonSearchRandomly" Click="buttonSearchRandomly_Click" Width="200"/>
+                
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Generation" Grid.Row="0" Grid.Column="0"/>
+                    <Label Content="0" Grid.Row="0" Grid.Column="1" Name="labelGeneration"/>
+                    <Label Content="Fitness" Grid.Row="1" Grid.Column="0"/>
+                    <Label Content="0.0" Grid.Row="1" Grid.Column="1" Name="labelFitness" />
+                    <Label Content="1st Quartile" Grid.Row="2" Grid.Column="0"/>
+                    <Label Content="0.0" Grid.Row="2" Grid.Column="1" Name="label1stQuartile" />
+                    <Label Content="2nd Quartile" Grid.Row="3" Grid.Column="0"/>
+                    <Label Content="0.0" Grid.Row="3" Grid.Column="1" Name="label2ndQuartile" />
+                    <Label Content="3rd Quartile" Grid.Row="4" Grid.Column="0"/>
+                    <Label Content="0.0" Grid.Row="4" Grid.Column="1" Name="label3rdQuartile" />
+                    <Label Content="4th Quartile" Grid.Row="5" Grid.Column="0"/>
+                    <Label Content="0.0" Grid.Row="5" Grid.Column="1" Name="label4thQuartile" />
+                </Grid>
+                
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Fitness"/>
-                <Label Content="0.0" Width="100" Name="labelFitness"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Border BorderBrush="Black" BorderThickness="2" Height="600" Width="1250">
-                    <Image Name ="imageProgram1" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"/>
-                </Border>
+            <StackPanel Orientation="Vertical">
+            <Border BorderBrush="Black" BorderThickness="2">
+                <Image Name ="imageProgram1" Height="400" Width="1000"/>
+            </Border>
+            <Border BorderBrush="Black" BorderThickness="2">
+                <Image Name ="imageProgram2" Height="400" Width="1000"/>
+            </Border>
             </StackPanel>
         </StackPanel>
     </Grid>

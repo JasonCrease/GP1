@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Compiler\Compiler.cs" />
     <Compile Include="Engine.cs" />
+    <Compile Include="FitnessFunctionCards.cs" />
     <Compile Include="FitnessFunctions.cs" />
     <Compile Include="IFitnessFunction.cs" />
     <Compile Include="Program.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace GP1
     {
         public float Evaluate(Program program)
         {
-            Tree.Variable XVariable = program.m_Variables[0];
+            Tree.Variable XVariable = program.Variables[0];
             float fitness = 0;
 
             for (int x = -5; x < 5; x += 1)
@@ -31,11 +32,11 @@ namespace GP1
     {
         public float Evaluate(Program program)
         {
-            Tree.Variable XVariable = program.m_Variables[0];
+            Tree.Variable XVariable = program.Variables[0];
             float fitness = 0;
-            int[] Xs = new int[] { 1, 2, 6, 12, 20 };
+            int[] Xs = new int[] { 1, 2, 5, 10, 17, 0, 37, 50, 65 };
 
-            for (int x = 0; x < 5; x += 1)
+            for (int x = 0; x < 8; x += 1)
             {
                 XVariable.Value = x;
                 program.Run();
@@ -43,7 +44,7 @@ namespace GP1
                 fitness += Math.Abs(program.Result - desiredResult);
             }
 
-            fitness += program.TreeSize / 2;
+            fitness += program.TreeSize / 5;
 
             return fitness;
         }
@@ -53,9 +54,9 @@ namespace GP1
     {
         public float Evaluate(Program program)
         {
-            Tree.Variable XVariable = program.m_Variables[0];
+            Tree.Variable XVariable = program.Variables[0];
             float fitness = 0;
-            int[] Ys = new int[] { 5, 5, 5, 5, 4, 5, 6, 7, 8, 9 };
+            int[] Ys = new int[] { 5, 4, 3, 2, 1, 2, 3, 4, 5, 6 };
 
             for (int x = 0; x < 10; x += 1)
             {
@@ -70,4 +71,5 @@ namespace GP1
             return fitness;
         }
     }
+
 }

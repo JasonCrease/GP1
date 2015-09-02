@@ -143,12 +143,16 @@ namespace GP1
                 m_Variables[i] = new Tree.Variable(m_FitnessFunction.Variables[i], -1000);
 
             m_Functions = new Tree.Func[] { 
-                new Tree.FuncMultiply(), new Tree.FuncAdd(), new Tree.FuncModulo(), new Tree.FuncSubtract(), 
+                //new Tree.FuncMultiply(), 
+                new Tree.FuncAdd(), 
+                //new Tree.FuncModulo(), 
+                new Tree.FuncSubtract(), 
                 //new Tree.FuncMax(), 
-                //new Tree.FuncIf(Tree.Comparator.GreaterThan), 
+                new Tree.FuncIf(Tree.Comparator.GreaterThan), 
                 new Tree.FuncIf(Tree.Comparator.Equal), 
                 //new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual),
-                //new Tree.FuncAnd(), new Tree.FuncOr()
+                new Tree.FuncAnd(), 
+                new Tree.FuncOr()
             };
             m_Values = new int[] { 0, 1, 2 };
         }

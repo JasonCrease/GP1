@@ -48,7 +48,7 @@
                 {2,     11, 12},
             };
 
-            for (int i = 0; i < C.Length / 4; i += 1)
+            for (int i = 0; i < C.Length / 3; i += 1)
             {
                 program.Variables[0].Value = C[i, 1];
                 program.Variables[1].Value = C[i, 2];

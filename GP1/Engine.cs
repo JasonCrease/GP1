@@ -16,9 +16,9 @@ namespace GP1
         private int[] m_Values;
         private List<Program> m_Progs;
 
-        private const int MAXGENERATIONS = 1000;
+        private const int MAXGENERATIONS = 20000;
         private const int TARGETPOPULATION = 500;
-        private const float MUTATIONRATE = 0.04f;
+        private const float MUTATIONRATE = 0.03f;
         private const float CROSSOVERRATE = 0.2f;
 
         private Thread m_RunThread;
@@ -76,18 +76,17 @@ namespace GP1
             Program[] orderedPrograms = m_Progs.OrderBy(x => x.Fitness).ToArray();
             int existingProgsCount = orderedPrograms.Length;
 
-            // Always reproduce best 2 programs
-            for (int i = 0; i < 2; i++)
+            // Always reproduce best 1 programs
+            for (int i = 0; i < 1; i++)
             {
                 nextGenPrograms.Add(orderedPrograms[i]);
                 progsAdded++;
             }
 
-            // Always add targetpop / 10 random programs
-            nextGenPrograms.AddRange(GetPopulation(TARGETPOPULATION / 10));
-            progsAdded += TARGETPOPULATION / 10;
+            // Always add targetpop / 20 random programs
+            nextGenPrograms.AddRange(GetPopulation(TARGETPOPULATION / 20));
+            progsAdded += TARGETPOPULATION / 20;
             
-
             while (progsAdded < TARGETPOPULATION)
             {
                 double operation = s_Random.NextDouble();

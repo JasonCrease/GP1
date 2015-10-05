@@ -23,8 +23,10 @@ namespace UI
         private void buttonSearchRandomly_Click(object sender, RoutedEventArgs e)
         {
             double bestFitnessSoFar = 1000f;
-            int maxTrials = 100000;
+            int maxTrials = 10000;
             int trials = 0;
+
+            m_Engine = new Engine(new FitnessFunction2CardPoker());
 
             while (trials++ < maxTrials && bestFitnessSoFar > 0f)
             {
@@ -38,7 +40,7 @@ namespace UI
             }
 
             DrawProgram(m_Program1, imageProgram1);
-            ShowStats(m_Program1);
+            labelFitness.Content = m_Engine.FitnessFunction.Evaluate(m_Program1).ToString();
             GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
             compiler.Compile(m_Program1, "Prog.dll");
         }
@@ -49,7 +51,7 @@ namespace UI
 
             Program p = m_Engine.GetStrongestProgram();
             GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
-            //compiler.Compile(p, "Prog.dll");
+            compiler.Compile(p, "Prog.dll");
 
             UpdateUiWhenEvolving(null);
         }
@@ -58,7 +60,7 @@ namespace UI
 
         private void buttonDoEvolution_Click(object sender, RoutedEventArgs e)
         {
-            m_Engine = new Engine(new FitnessFunction3CardPoker());
+            m_Engine = new Engine(new FitnessFunction2CardPoker());
             m_Engine.RunAsync(EvolutionDone);
             updateUiTimer = new System.Threading.Timer(UpdateUiWhenEvolving, null, 1000, 1000);
         }

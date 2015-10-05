@@ -29,13 +29,15 @@ namespace GP1.Compiler
             ModuleBuilder modb = asmb.DefineDynamicModule(moduleName);
             TypeBuilder typeBuilder = modb.DefineType("Program");
             MethodBuilder methb = typeBuilder.DefineMethod("Function", MethodAttributes.Static | MethodAttributes.Public, typeof(int), argTypes);
- 
+
+            for (int i = 0; i < Program.Variables.Length; i++)
+                methb.DefineParameter(i + 1, ParameterAttributes.HasDefault, Program.Variables[i].Name);
+
             // CodeGenerator 
             this.il = methb.GetILGenerator();
             this.symbolTable = new Dictionary<string, LocalBuilder>();
 
             // Go Compile 
-            GenerateParameters(methb, Program.Variables);
             GenerateStatement(Program.TopNode);
 
             il.Emit(OpCodes.Ret);
@@ -46,12 +48,6 @@ namespace GP1.Compiler
 
             this.symbolTable = null;
             this.il = null;
-        }
-
-        private void GenerateParameters(MethodBuilder methb, Tree.Variable[] variables)
-        {
-            for (int i = 0; i < variables.Length; i++)
-                methb.DefineParameter(i, ParameterAttributes.HasDefault, variables[i].Name);
         }
 
         private void GenerateStatement(Tree.Node node)
@@ -127,16 +123,16 @@ namespace GP1.Compiler
                     // Output the first two statements - which we will be comparing
                     GenerateStatement(funcNode.Children[0]);
                     GenerateStatement(funcNode.Children[1]);
-                    
+
                     Label equalLabel = il.DefineLabel();
                     Label afterLabel = il.DefineLabel();
 
                     OpCode conditionOpcode = OpCodes.Beq_S;
-                    if(funcIf.Comparator == Tree.Comparator.Equal) 
+                    if (funcIf.Comparator == Tree.Comparator.Equal)
                         conditionOpcode = OpCodes.Beq_S;
-                    else if(funcIf.Comparator == Tree.Comparator.GreaterThanOrEqual) 
+                    else if (funcIf.Comparator == Tree.Comparator.GreaterThanOrEqual)
                         conditionOpcode = OpCodes.Bge_S;
-                    else if(funcIf.Comparator == Tree.Comparator.GreaterThan) 
+                    else if (funcIf.Comparator == Tree.Comparator.GreaterThan)
                         conditionOpcode = OpCodes.Bgt_S;
                     else
                         throw new ApplicationException();
@@ -152,6 +148,24 @@ namespace GP1.Compiler
                     LocalBuilder aLocal = il.DeclareLocal(typeof(Int32));
                     il.Emit(OpCodes.Stloc, aLocal);
                     il.Emit(OpCodes.Ldloc, aLocal);
+                }
+                else if (func is Tree.FuncOr)
+                {
+                    Tree.FuncOr funcOr = func as Tree.FuncOr;
+
+                    // Output the statements, which should leave their values on the stack
+                    GenerateStatement(funcNode.Children[0]);
+                    GenerateStatement(funcNode.Children[1]);
+                    il.Emit(OpCodes.Or);
+                }
+                else if (func is Tree.FuncAnd)
+                {
+                    Tree.FuncAnd funcAnd = func as Tree.FuncAnd;
+
+                    // Output the statements, which should leave their values on the stack
+                    GenerateStatement(funcNode.Children[0]);
+                    GenerateStatement(funcNode.Children[1]);
+                    il.Emit(OpCodes.And);
                 }
                 else
                     throw new ApplicationException("Unknown function");

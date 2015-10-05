@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace GP1
 {
@@ -18,10 +16,10 @@ namespace GP1
         private int[] m_Values;
         private List<Program> m_Progs;
 
-        private const int MAXGENERATIONS = 10000;
-        private const int TARGETPOPULATION = 1000;
-        private const float MUTATIONRATE = 0.01f;
-        private const float CROSSOVERRATE = 0.1f;
+        private const int MAXGENERATIONS = 1000;
+        private const int TARGETPOPULATION = 500;
+        private const float MUTATIONRATE = 0.04f;
+        private const float CROSSOVERRATE = 0.2f;
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -41,6 +39,12 @@ namespace GP1
         }
 
         private object m_LockObject = new object();
+
+        public void UpdatePopulationStatistics()
+        {
+            m_PopulationStatistics = new PopulationStatistics(m_Progs);
+        }
+
         private PopulationStatistics m_PopulationStatistics;
         public PopulationStatistics PopulationStatistics { get { return m_PopulationStatistics; } }
 
@@ -56,7 +60,7 @@ namespace GP1
                     UpdateFitnesses();
 
                     if (m_Gen % 100 == 0)
-                        m_PopulationStatistics = new PopulationStatistics(m_Progs);
+                        UpdatePopulationStatistics();
                 }
             }
 
@@ -79,9 +83,9 @@ namespace GP1
                 progsAdded++;
             }
 
-            // Always add 10 random programs
-            nextGenPrograms.AddRange(GetPopulation(10));
-            progsAdded += 10;
+            // Always add targetpop / 10 random programs
+            nextGenPrograms.AddRange(GetPopulation(TARGETPOPULATION / 10));
+            progsAdded += TARGETPOPULATION / 10;
             
 
             while (progsAdded < TARGETPOPULATION)

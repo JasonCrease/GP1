@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Threading;
 using GP1;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -20,10 +21,10 @@ namespace UI
         private Program m_Program1;
         private Engine m_Engine;
 
-        private void buttonSearchRandomly_Click(object sender, RoutedEventArgs e)
+        private void BackgroundRandomSearch()
         {
             double bestFitnessSoFar = 1000f;
-            int maxTrials = 10000;
+            int maxTrials = 1000000;
             int trials = 0;
 
             m_Engine = new Engine(new FitnessFunction2CardPoker());
@@ -37,12 +38,31 @@ namespace UI
                     m_Program1 = program;
                     bestFitnessSoFar = fitness;
                 }
-            }
 
-            DrawProgram(m_Program1, imageProgram1);
-            labelFitness.Content = m_Engine.FitnessFunction.Evaluate(m_Program1).ToString();
+                if (trials % 10000 == 0)
+                {
+                   Dispatcher.Invoke(() =>
+                   {
+                       labelGeneration.Content = trials.ToString();
+                       labelFitness.Content = m_Engine.FitnessFunction.Evaluate(m_Program1).ToString();
+                       DrawProgram(m_Program1, imageProgram1);
+                   });
+                }
+            }
+            
+            Dispatcher.Invoke(() =>
+            {
+                DrawProgram(m_Program1, imageProgram1);
+                labelFitness.Content = m_Engine.FitnessFunction.Evaluate(m_Program1).ToString();
+            });
             GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
             compiler.Compile(m_Program1, "Prog.dll");
+        }
+
+        private void buttonSearchRandomly_Click(object sender, RoutedEventArgs e)
+        {
+            Thread t = new Thread(BackgroundRandomSearch);
+            t.Start();
         }
 
         public void EvolutionDone(object sender, EventArgs e)

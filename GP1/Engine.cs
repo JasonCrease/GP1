@@ -17,9 +17,10 @@ namespace GP1
         private List<Program> m_Progs;
 
         private const int MAXGENERATIONS = 50000;
-        private const int TARGETPOPULATION = 100;
-        private const float MUTATIONRATE = 0.4f;
-        private const float CROSSOVERRATE = 0.1f;
+        private const int TARGETPOPULATION = 500;
+        private const float MUTATIONRATE = 0.2f;
+        private const float CROSSOVERRATE = 0.3f;
+        private const double TOURNAMENT_SELECTION_P = 0.1f; // exponential p
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -76,17 +77,17 @@ namespace GP1
             Program[] orderedPrograms = m_Progs.OrderBy(x => x.Fitness).ToArray();
             int existingProgsCount = orderedPrograms.Length;
 
-            const int elitism = 5;
-            // Always reproduce best 5 programs
+            const int elitism = 2;
+            // Always reproduce best 2 programs
             for (int i = 0; i < elitism; i++)
             {
                 nextGenPrograms.Add(orderedPrograms[i]);
                 progsAdded++;
             }
 
-            // Always add targetpop / 5 random programs
-            nextGenPrograms.AddRange(GetPopulation(TARGETPOPULATION / 5));
-            progsAdded += TARGETPOPULATION / 5;
+            // Always add targetpop / 50 random programs
+            nextGenPrograms.AddRange(GetPopulation(TARGETPOPULATION / 50));
+            progsAdded += TARGETPOPULATION / 50;
             
             while (progsAdded < TARGETPOPULATION)
             {
@@ -95,7 +96,7 @@ namespace GP1
                 if(operation < MUTATIONRATE)
                 {
                     // Mutation
-                    int progToMutateNum = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
+                    int progToMutateNum = SelectFrom(existingProgsCount);
                     Program progToMutate = m_Progs[progToMutateNum].Mutate();
                     progToMutate.FitnessIsDirty = true;
                     nextGenPrograms.Add(progToMutate);
@@ -104,8 +105,8 @@ namespace GP1
                 else if (operation < MUTATIONRATE + CROSSOVERRATE)
                 {
                     // Crossover
-                    int parent1 = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
-                    int parent2 = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
+                    int parent1 = SelectFrom(existingProgsCount);
+                    int parent2 = SelectFrom(existingProgsCount);
                     Program childProgram = m_Progs[parent1].Crossover(m_Progs[parent2]);
                     childProgram.FitnessIsDirty = true;
                     nextGenPrograms.Add(childProgram);
@@ -114,7 +115,7 @@ namespace GP1
                 else
                 {
                     // Reproduction
-                    int progToReproduce = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
+                    int progToReproduce = SelectFrom(existingProgsCount);
                     if (progToReproduce >= elitism)
                     {
                         nextGenPrograms.Add(m_Progs[progToReproduce]);
@@ -124,6 +125,21 @@ namespace GP1
             }
 
             return nextGenPrograms;
+        }
+
+        double LOG_1_OVER_TOURNAMENT_SELECTION_P = Math.Log(1 - TOURNAMENT_SELECTION_P);
+
+        private int SelectFrom(int existingProgsCount)
+        {
+            double x = 0;
+
+            do
+            {
+                double r = s_Random.NextDouble();
+                x = Math.Log(1 - r) / LOG_1_OVER_TOURNAMENT_SELECTION_P;
+            } while (x > existingProgsCount);
+
+            return (int)x;
         }
 
         private void UpdateFitnesses()
@@ -158,12 +174,12 @@ namespace GP1
                 new Tree.FuncAdd(), 
                 //new Tree.FuncModulo(), 
                 new Tree.FuncSubtract(), 
-                //new Tree.FuncMax(), 
-                new Tree.FuncIf(Tree.Comparator.GreaterThan), 
-                new Tree.FuncIf(Tree.Comparator.Equal), 
+                new Tree.FuncMax(), 
+                //new Tree.FuncIf(Tree.Comparator.GreaterThan), 
+                //new Tree.FuncIf(Tree.Comparator.Equal), 
                 //new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual),
-                new Tree.FuncAnd(), 
-                new Tree.FuncOr()
+                //new Tree.FuncAnd(), 
+               // new Tree.FuncOr()
             };
             m_Values = new int[] { 0, 1, 2, 3 };
         }

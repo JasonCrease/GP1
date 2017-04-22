@@ -24,7 +24,7 @@ namespace UI
         private void BackgroundRandomSearch()
         {
             double bestFitnessSoFar = 1000f;
-            int maxTrials = 1000000;
+            int maxTrials = 1000;
             int trials = 0;
 
             m_Engine = new Engine(new FitnessFunction2CardPoker());
@@ -80,7 +80,7 @@ namespace UI
 
         private void buttonDoEvolution_Click(object sender, RoutedEventArgs e)
         {
-            m_Engine = new Engine(new FitnessFunction2CardPoker());
+            m_Engine = new Engine(new FitnessFunction3CardPoker());
             m_Engine.RunAsync(EvolutionDone);
             updateUiTimer = new System.Threading.Timer(UpdateUiWhenEvolving, null, 1000, 1000);
         }
@@ -90,6 +90,8 @@ namespace UI
             Dispatcher.Invoke(delegate {
                     Program p = m_Engine.GetStrongestProgram();
                     DrawProgram(p, imageProgram1);
+                    Program p2 = m_Engine.getRandomProgram();
+                    DrawProgram(p2, imageProgram2);
                     ShowStats(p);
                 }
             );

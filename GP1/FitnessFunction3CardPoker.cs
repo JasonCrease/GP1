@@ -12,13 +12,13 @@ namespace GP1
             }
         }
 
-        const int HANDSTODEAL = 200;
+        const int HANDSTODEAL = 160;
         int[][] C = new int[HANDSTODEAL][];
 
         public FitnessFunction3CardPoker()
         {
             int EACHTODEAL = HANDSTODEAL / 4;
-            Random r = new Random(33);
+            Random r = new Random(23);
 
             int straightsAdded = 0;
             int threeKindAdded = 0;
@@ -74,7 +74,7 @@ namespace GP1
                 fitness += program.Result == desiredResult ? 0 : 1;
             }
 
-            fitness += (double)program.TreeSize / 2D;
+            fitness += (double)program.TreeSize / 8D;
 
             return fitness;
         }

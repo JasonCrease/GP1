@@ -161,16 +161,13 @@ namespace GP1
             m_FitnessIsDirty = false;
         }
 
-        public Bitmap Draw()
+        public Bitmap Draw(float width, float height)
         {
-            float width = 2000;
-            float height = 600;
-
             Bitmap bmp = new Bitmap((int)width, (int)height);
             Brush brush = Brushes.Black;
             Graphics g = Graphics.FromImage(bmp);
 
-            DrawNode(m_TopNode, g, 1, width / 2, 50, (float)width);
+            DrawNode(m_TopNode, g, 1, width / 2, 20, (float)width);
 
             return bmp;
         }

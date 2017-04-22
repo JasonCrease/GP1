@@ -109,7 +109,7 @@ namespace UI
 
         private void DrawProgram(Program program, System.Windows.Controls.Image image)
         {
-            Bitmap bmp = program.Draw();
+            Bitmap bmp = program.Draw((float)image.Width, (float)image.Height);
             image.Source = loadBitmap(bmp);
         }
 

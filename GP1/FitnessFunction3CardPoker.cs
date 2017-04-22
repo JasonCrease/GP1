@@ -12,13 +12,13 @@ namespace GP1
             }
         }
 
-        const int HANDSTODEAL = 160;
+        const int HANDSTODEAL = 400;
         int[][] C = new int[HANDSTODEAL][];
 
         public FitnessFunction3CardPoker()
         {
             int EACHTODEAL = HANDSTODEAL / 4;
-            Random r = new Random(23);
+            Random r = new Random(13);
 
             int straightsAdded = 0;
             int threeKindAdded = 0;
@@ -36,17 +36,17 @@ namespace GP1
 
                 Array.Sort(C[i]);
 
-                if (card1 + 1 == card2 && card2 + 1 == card3 && straightsAdded < EACHTODEAL)  //straight
+                if (C[i][1] + 1 == C[i][2] && C[i][2] + 1 == C[i][3] && straightsAdded < EACHTODEAL)  //straight
                 {
                     C[i][0] = 3;
                     straightsAdded++;
                 }
-                else if (card1 == card2 && card2 == card3 && threeKindAdded < EACHTODEAL)  // 3 of a kind
+                else if (C[i][1] == C[i][2] && C[i][2] == C[i][3] && threeKindAdded < EACHTODEAL)  // 3 of a kind
                 {
                     C[i][0] = 2;
                     threeKindAdded++;
                 }
-                else if ((card1 == card2 || card2 == card3) && twoKindAdded < EACHTODEAL)  // 2 of a kind
+                else if ((C[i][1] == C[i][2] || C[i][2] == C[i][3]) && twoKindAdded < EACHTODEAL)  // 2 of a kind
                 {
                     C[i][0] = 1;
                     twoKindAdded++;
@@ -74,7 +74,7 @@ namespace GP1
                 fitness += program.Result == desiredResult ? 0 : 1;
             }
 
-            fitness += (double)program.TreeSize / 8D;
+            fitness += (double)program.TreeSize / 5D;
 
             return fitness;
         }

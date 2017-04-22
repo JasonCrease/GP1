@@ -16,10 +16,10 @@ namespace GP1
         private int[] m_Values;
         private List<Program> m_Progs;
 
-        private const int MAXGENERATIONS = 20000;
-        private const int TARGETPOPULATION = 500;
-        private const float MUTATIONRATE = 0.03f;
-        private const float CROSSOVERRATE = 0.2f;
+        private const int MAXGENERATIONS = 50000;
+        private const int TARGETPOPULATION = 100;
+        private const float MUTATIONRATE = 0.4f;
+        private const float CROSSOVERRATE = 0.1f;
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -59,7 +59,7 @@ namespace GP1
                     m_Progs = GenerateNextGeneration();
                     UpdateFitnesses();
 
-                    if (m_Gen % 100 == 0)
+                    if (m_Gen % 20 == 0)
                         UpdatePopulationStatistics();
                 }
             }
@@ -76,16 +76,17 @@ namespace GP1
             Program[] orderedPrograms = m_Progs.OrderBy(x => x.Fitness).ToArray();
             int existingProgsCount = orderedPrograms.Length;
 
-            // Always reproduce best 1 programs
-            for (int i = 0; i < 1; i++)
+            const int elitism = 5;
+            // Always reproduce best 5 programs
+            for (int i = 0; i < elitism; i++)
             {
                 nextGenPrograms.Add(orderedPrograms[i]);
                 progsAdded++;
             }
 
-            // Always add targetpop / 20 random programs
-            nextGenPrograms.AddRange(GetPopulation(TARGETPOPULATION / 20));
-            progsAdded += TARGETPOPULATION / 20;
+            // Always add targetpop / 5 random programs
+            nextGenPrograms.AddRange(GetPopulation(TARGETPOPULATION / 5));
+            progsAdded += TARGETPOPULATION / 5;
             
             while (progsAdded < TARGETPOPULATION)
             {
@@ -94,8 +95,10 @@ namespace GP1
                 if(operation < MUTATIONRATE)
                 {
                     // Mutation
-                    int progToMutate = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
-                    nextGenPrograms.Add(m_Progs[progToMutate].Mutate());
+                    int progToMutateNum = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
+                    Program progToMutate = m_Progs[progToMutateNum].Mutate();
+                    progToMutate.FitnessIsDirty = true;
+                    nextGenPrograms.Add(progToMutate);
                     progsAdded++;
                 }
                 else if (operation < MUTATIONRATE + CROSSOVERRATE)
@@ -103,15 +106,20 @@ namespace GP1
                     // Crossover
                     int parent1 = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
                     int parent2 = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
-                    nextGenPrograms.Add(m_Progs[parent1].Crossover(m_Progs[parent2]));
+                    Program childProgram = m_Progs[parent1].Crossover(m_Progs[parent2]);
+                    childProgram.FitnessIsDirty = true;
+                    nextGenPrograms.Add(childProgram);
                     progsAdded++;
                 }
                 else
                 {
                     // Reproduction
                     int progToReproduce = (int)(s_Random.NextDouble() * s_Random.NextDouble() * existingProgsCount);
-                    nextGenPrograms.Add(m_Progs[progToReproduce]);
-                    progsAdded++;
+                    if (progToReproduce >= elitism)
+                    {
+                        nextGenPrograms.Add(m_Progs[progToReproduce]);
+                        progsAdded++;
+                    }
                 }
             }
 
@@ -157,7 +165,7 @@ namespace GP1
                 new Tree.FuncAnd(), 
                 new Tree.FuncOr()
             };
-            m_Values = new int[] { 0, 1, 2 };
+            m_Values = new int[] { 0, 1, 2, 3 };
         }
 
         public Program CreateRandomProgram()
@@ -180,5 +188,18 @@ namespace GP1
             return best;
         }
 
+
+        public Program getRandomProgram()
+        {
+            Program best = null;
+            Random r = new Random();
+
+            lock (m_LockObject)
+            {
+                best = m_Progs[r.Next(TARGETPOPULATION)];
+            }
+
+            return best;
+        }
     }
 }

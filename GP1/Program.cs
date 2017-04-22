@@ -20,7 +20,7 @@ namespace GP1
         private static Random s_Random = new Random();
 
         private bool m_FitnessIsDirty = true;
-        public bool FitnessIsDirty { get { return m_FitnessIsDirty; } }
+        public bool FitnessIsDirty {  set { m_FitnessIsDirty = value; } get { return m_FitnessIsDirty; } }
 
         public Tree.Node TopNode
         {
@@ -53,16 +53,15 @@ namespace GP1
 
         private Tree.Node GenerateRandomNode(int depth)
         {
-            m_FitnessIsDirty = true;
             double randType = s_Random.NextDouble();
             Tree.Node node;
 
-            if (randType > 0.8 || depth == MAXPROGRAMDEPTH)
+            if (randType > 0.75 || depth == MAXPROGRAMDEPTH)
             {
                 int valueNum = s_Random.Next(m_Values.Length);
                 node = new Tree.ValueNode(m_Values[valueNum]);
             }
-            else if (randType > 0.6)
+            else if (randType > 0.5)
             {
                 int variableNum = s_Random.Next(m_Variables.Length);
                 node = new Tree.VariableNode(m_Variables[variableNum]);
@@ -122,7 +121,6 @@ namespace GP1
 
         public Program Crossover(Program prog2)
         {
-            m_FitnessIsDirty = true;
             Program prog1Clone = this.CloneProgram();
             Tree.Node nodeToTake = null;
 
@@ -165,7 +163,7 @@ namespace GP1
 
         public Bitmap Draw()
         {
-            float width = 1200;
+            float width = 2000;
             float height = 600;
 
             Bitmap bmp = new Bitmap((int)width, (int)height);
@@ -177,11 +175,13 @@ namespace GP1
             return bmp;
         }
 
+
         private static void DrawNode(Tree.Node node, Graphics g, int depth, float x, float y, float imageWidth)
         {
+            Pen linePen = new Pen(Brushes.Black, 2);
             Font font = new Font("Script", 14);
             int rectWidth = 50;
-            int rectHeight = 20;
+            int rectHeight = 25;
             int distanceYBetweenNodes = rectHeight * 2;
             if (depth > 10) return; //only draw to depth 10;
 
@@ -192,12 +192,12 @@ namespace GP1
                 g.DrawString(functionNode.Function.Name, font, Brushes.Blue, x - 10, y - 10);
 
                 int numberOfChildren = functionNode.Children.Length;
-                float nodeSplitting = (imageWidth / 2) * (float)Math.Pow(0.5, depth);
+                float nodeSplitting = (float)(imageWidth / 2) * (float)Math.Pow(0.5, depth) * (float)1.0;
 
                 for (int i = 0; i < numberOfChildren; i++)
                 {
                     float childX = (x - nodeSplitting) + ((i * nodeSplitting * 2) / (numberOfChildren - 1));
-                    g.DrawLine(Pens.Black, x, y + rectHeight / 2, childX, y + distanceYBetweenNodes - rectHeight / 2);
+                    g.DrawLine(linePen, x, y + rectHeight / 2, childX, y + distanceYBetweenNodes - rectHeight / 2);
                     DrawNode(functionNode.Children[i], g, depth + 1, childX, y + distanceYBetweenNodes, imageWidth);
                 }
             }

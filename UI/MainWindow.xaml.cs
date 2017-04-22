@@ -82,7 +82,7 @@ namespace UI
         {
             m_Engine = new Engine(new FitnessFunction2CardPoker());
             m_Engine.RunAsync(EvolutionDone);
-            updateUiTimer = new System.Threading.Timer(UpdateUiWhenEvolving, null, 1000, 1000);
+            updateUiTimer = new Timer(UpdateUiWhenEvolving, null, 1000, 1000);
         }
 
         private void UpdateUiWhenEvolving(object state)
@@ -99,6 +99,7 @@ namespace UI
 
         private void ShowStats(Program program)
         {
+            DrawPopulationHistogram(imageHistogram);
             labelGeneration.Content = m_Engine.CurrentGeneration;
             labelFitness.Content = program.Fitness.ToString("0.0");
             labelBestTreeSize.Content = program.TreeSize.ToString();
@@ -111,6 +112,11 @@ namespace UI
         private void DrawProgram(Program program, System.Windows.Controls.Image image)
         {
             Bitmap bmp = program.Draw((float)image.Width, (float)image.Height);
+            image.Source = loadBitmap(bmp);
+        }
+        private void DrawPopulationHistogram(System.Windows.Controls.Image image)
+        {
+            Bitmap bmp = m_Engine.DrawPopulationHistogram((float)image.Width, (float)image.Height);
             image.Source = loadBitmap(bmp);
         }
 

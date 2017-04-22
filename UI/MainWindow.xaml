@@ -6,12 +6,13 @@
     <Grid>
         <StackPanel Orientation="Horizontal">
             <StackPanel Orientation="Vertical">
-                <Button Content="Do evolution" Name="buttonDoEvolution" Click ="buttonDoEvolution_Click" Width="200"/>
+                <Button Content="Do evolution" Name="buttonDoEvolution" Click ="buttonDoEvolution_Click" Width="200" Height="50"/>
 
-                <Button Content="Search randomly for program" Name="buttonSearchRandomly" Click="buttonSearchRandomly_Click" Width="200"/>
+                <Button Content="Search randomly for program" Name="buttonSearchRandomly" Click="buttonSearchRandomly_Click" Height="50" Width="200"/>
                 
                 <Grid >
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -39,6 +40,7 @@
                     <Label Content="0.0" Grid.Row="5" Grid.Column="1" Name="label3rdQuartile" />
                     <Label Content="4th Quartile" Grid.Row="6" Grid.Column="0"/>
                     <Label Content="0.0" Grid.Row="6" Grid.Column="1" Name="label4thQuartile" />
+                    <Image Name ="imageHistogram" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Height="400" Width="100"/>
                 </Grid>
                 
             </StackPanel>

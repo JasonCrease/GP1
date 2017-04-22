@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 
@@ -16,11 +17,11 @@ namespace GP1
         private int[] m_Values;
         private List<Program> m_Progs;
 
-        private const int MAXGENERATIONS = 50000;
+        private const int MAXGENERATIONS = 5000;
         private const int TARGETPOPULATION = 500;
-        private const float MUTATIONRATE = 0.2f;
+        private const float MUTATIONRATE = 0.3f;
         private const float CROSSOVERRATE = 0.3f;
-        private const double TOURNAMENT_SELECTION_P = 0.1f; // exponential p
+        private const double TOURNAMENT_SELECTION_P = 0.2f; // exponential p
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -175,11 +176,11 @@ namespace GP1
                 //new Tree.FuncModulo(), 
                 new Tree.FuncSubtract(), 
                 new Tree.FuncMax(), 
-                //new Tree.FuncIf(Tree.Comparator.GreaterThan), 
-                //new Tree.FuncIf(Tree.Comparator.Equal), 
+                new Tree.FuncIf(Tree.Comparator.GreaterThan), 
+                new Tree.FuncIf(Tree.Comparator.Equal), 
                 //new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual),
-                //new Tree.FuncAnd(), 
-               // new Tree.FuncOr()
+                new Tree.FuncAnd(), 
+                new Tree.FuncOr()
             };
             m_Values = new int[] { 0, 1, 2, 3 };
         }
@@ -198,7 +199,6 @@ namespace GP1
             {
                 UpdateFitnesses();
                 best = m_Progs.OrderBy(x => x.Fitness).First();
-                best.TopNode.Simplify();
             }
             
             return best;
@@ -217,5 +217,30 @@ namespace GP1
 
             return best;
         }
+
+        static Pen LinePen = new Pen(Brushes.Red, 2);
+
+        public Bitmap DrawPopulationHistogram(float width, float height)
+        {
+            Bitmap bmp = new Bitmap((int)width, (int)height);
+            Brush brush = Brushes.Red;
+            Graphics g = Graphics.FromImage(bmp);
+
+            lock (m_LockObject)
+            {
+                double[] orderedByFitness = m_Progs.OrderBy(x => x.Fitness).Select(x => x.Fitness).ToArray();
+                double maxFitness = orderedByFitness.Last();
+
+                for (int i = 0; i < height; i += 2)
+                {
+                    int k = (int)((i * TARGETPOPULATION) / height);
+                    float wid = ((float)orderedByFitness[k] * (float)width) / (float)maxFitness;
+                    g.DrawLine(LinePen, 0, i, wid, i);
+                }
+            }
+
+            return bmp;
+        }
+    
     }
 }

@@ -180,7 +180,7 @@ namespace GP1
 
         private static void DrawNode(Tree.Node node, Graphics g, int depth, float x, float y, float imageWidth)
         {
-            const int CHAR_WIDTH = 18;
+            const int CHAR_WIDTH = 16;
             const int rectHeight = 25;
             const int distanceYBetweenNodes = rectHeight * 2;
 

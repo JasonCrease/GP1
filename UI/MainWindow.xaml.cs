@@ -86,6 +86,23 @@ namespace UI
             updateUiTimer = new Timer(UpdateUiWhenEvolving, null, 1000, 1000);
         }
 
+        bool m_Paused = false;
+
+        private void buttonPause_Click(object sender, RoutedEventArgs e)
+        {
+            if (!m_Paused) {
+                m_Paused = true;
+                buttonPause.Content = "Continue";
+                m_Engine.Pause();
+            }
+            else
+            {
+                m_Paused = false;
+                buttonPause.Content = "Pause";
+                m_Engine.UnPause();
+            }
+        }
+
         private void UpdateUiWhenEvolving(object state)
         {
             Dispatcher.Invoke(delegate {
@@ -105,7 +122,7 @@ namespace UI
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("Generation:  {0}\n", m_Engine.CurrentGeneration);
             sb.AppendFormat("Max generations:  {0}\n", Engine.MAXGENERATIONS);
-            sb.AppendFormat("Population: {0}\n", Engine.TARGETPOPULATION);
+            sb.AppendFormat("Population:  {0}\n", Engine.TARGETPOPULATION);
             sb.AppendFormat("Mutation Rate:  {0}\n", Engine.MUTATIONRATE.ToString("0.000"));
             sb.AppendFormat("Crossover Rate:  {0}\n", Engine.CROSSOVERRATE.ToString("0.000"));
             sb.AppendFormat("Selection P:  {0}\n", Engine.TOURNAMENT_SELECTION_P.ToString("0.000"));

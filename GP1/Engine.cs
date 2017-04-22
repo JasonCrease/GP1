@@ -19,9 +19,9 @@ namespace GP1
 
         public const int MAXGENERATIONS = 5000;
         public const int TARGETPOPULATION = 500;
-        public const float MUTATIONRATE = 0.3f;
-        public const float CROSSOVERRATE = 0.3f;
-        public const double TOURNAMENT_SELECTION_P = 0.2f; // exponential p
+        public const float MUTATIONRATE = 0.4f;
+        public const float CROSSOVERRATE = 0.1f;
+        public const double TOURNAMENT_SELECTION_P = 0.1f; // exponential p
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -50,6 +50,15 @@ namespace GP1
         private PopulationStatistics m_PopulationStatistics;
         public PopulationStatistics PopulationStatistics { get { return m_PopulationStatistics; } }
 
+        public void Pause()
+        {
+            m_Paused = true;
+        }
+        public void UnPause()
+        {
+            m_Paused = false;
+        }
+
         public void Run()
         {
             m_Progs = GetPopulation(TARGETPOPULATION);
@@ -63,6 +72,10 @@ namespace GP1
 
                     if (m_Gen % 20 == 0)
                         UpdatePopulationStatistics();
+                }
+
+                while (m_Paused) {
+                    Thread.Sleep(1000);
                 }
             }
 
@@ -127,6 +140,8 @@ namespace GP1
 
             return nextGenPrograms;
         }
+
+  
 
         double LOG_1_OVER_TOURNAMENT_SELECTION_P = Math.Log(1 - TOURNAMENT_SELECTION_P);
 
@@ -219,6 +234,7 @@ namespace GP1
         }
 
         static Pen LinePen = new Pen(Brushes.Red, 2);
+        private bool m_Paused;
 
         public Bitmap DrawPopulationHistogram(float width, float height)
         {

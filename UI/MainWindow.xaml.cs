@@ -80,7 +80,7 @@ namespace UI
 
         private void buttonDoEvolution_Click(object sender, RoutedEventArgs e)
         {
-            m_Engine = new Engine(new FitnessFunction3CardPoker());
+            m_Engine = new Engine(new FitnessFunction2CardPoker());
             m_Engine.RunAsync(EvolutionDone);
             updateUiTimer = new System.Threading.Timer(UpdateUiWhenEvolving, null, 1000, 1000);
         }
@@ -101,6 +101,7 @@ namespace UI
         {
             labelGeneration.Content = m_Engine.CurrentGeneration;
             labelFitness.Content = program.Fitness.ToString("0.0");
+            labelBestTreeSize.Content = program.TreeSize.ToString();
             label1stQuartile.Content = m_Engine.PopulationStatistics.FitnessFirstQuartile.ToString("0.0");
             label2ndQuartile.Content = m_Engine.PopulationStatistics.FitnessSecondQuartile.ToString("0.0");
             label3rdQuartile.Content = m_Engine.PopulationStatistics.FitnessThirdQuartile.ToString("0.0");

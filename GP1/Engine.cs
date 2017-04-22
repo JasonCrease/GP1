@@ -17,11 +17,11 @@ namespace GP1
         private int[] m_Values;
         private List<Program> m_Progs;
 
-        private const int MAXGENERATIONS = 5000;
-        private const int TARGETPOPULATION = 500;
-        private const float MUTATIONRATE = 0.3f;
-        private const float CROSSOVERRATE = 0.3f;
-        private const double TOURNAMENT_SELECTION_P = 0.2f; // exponential p
+        public const int MAXGENERATIONS = 5000;
+        public const int TARGETPOPULATION = 500;
+        public const float MUTATIONRATE = 0.3f;
+        public const float CROSSOVERRATE = 0.3f;
+        public const double TOURNAMENT_SELECTION_P = 0.2f; // exponential p
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;

@@ -161,7 +161,7 @@ namespace GP1
             m_FitnessIsDirty = false;
         }
 
-        public Bitmap Draw(float width, float height)
+        public Bitmap Draw(String title, float width, float height)
         {
             Bitmap bmp = new Bitmap((int)width, (int)height);
             Brush brush = Brushes.Black;
@@ -169,12 +169,14 @@ namespace GP1
 
             DrawNode(m_TopNode, g, 1, width / 2, 20, (float)width);
 
+            g.DrawString(title, TitleFont, Brushes.Black, 10, 10);
+
             return bmp;
         }
 
-
+        static Font TitleFont = new Font("Arial", 16);
         static Pen LinePen = new Pen(Brushes.Black, 2);
-        static Font Font = new Font("Script", 12);
+        static Font Font = new Font("Arial", 12);
 
         private static void DrawNode(Tree.Node node, Graphics g, int depth, float x, float y, float imageWidth)
         {

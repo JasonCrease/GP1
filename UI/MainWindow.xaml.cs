@@ -46,14 +46,14 @@ namespace UI
                    {
                        //labelGeneration.Content = trials.ToString();
                        //labelFitness.Content = m_Engine.FitnessFunction.Evaluate(m_Program1).ToString();
-                       DrawProgram(m_Program1, imageProgram1);
+                       DrawProgram("Best Program", m_Program1, imageProgram1);
                    });
                 }
             }
             
             Dispatcher.Invoke(() =>
             {
-                DrawProgram(m_Program1, imageProgram1);
+                DrawProgram("Best Program", m_Program1, imageProgram1);
                 //labelFitness.Content = m_Engine.FitnessFunction.Evaluate(m_Program1).ToString();
             });
             GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
@@ -90,9 +90,9 @@ namespace UI
         {
             Dispatcher.Invoke(delegate {
                     Program p = m_Engine.GetStrongestProgram();
-                    DrawProgram(p, imageProgram1);
+                    DrawProgram("Best Program", p, imageProgram1);
                     Program p2 = m_Engine.getRandomProgram();
-                    DrawProgram(p2, imageProgram2);
+                    DrawProgram("Some Program", p2, imageProgram2);
                     ShowStats(p);
                 }
             );
@@ -106,9 +106,9 @@ namespace UI
             sb.AppendFormat("Generation:  {0}\n", m_Engine.CurrentGeneration);
             sb.AppendFormat("Max generations:  {0}\n", Engine.MAXGENERATIONS);
             sb.AppendFormat("Population: {0}\n", Engine.TARGETPOPULATION);
-            sb.AppendFormat("Mutation Rate:  {0}\n", Engine.MUTATIONRATE);
-            sb.AppendFormat("Crossover Rate:  {0}\n", Engine.CROSSOVERRATE);
-            sb.AppendFormat("Selection P:  {0}\n", Engine.TOURNAMENT_SELECTION_P);
+            sb.AppendFormat("Mutation Rate:  {0}\n", Engine.MUTATIONRATE.ToString("0.000"));
+            sb.AppendFormat("Crossover Rate:  {0}\n", Engine.CROSSOVERRATE.ToString("0.000"));
+            sb.AppendFormat("Selection P:  {0}\n", Engine.TOURNAMENT_SELECTION_P.ToString("0.000"));
             sb.AppendLine();
             sb.AppendFormat("Best fitness:  {0}\n", m_Engine.GetStrongestProgram().Fitness.ToString("0.0"));
             sb.AppendFormat("Quartile 1:  {0}\n", m_Engine.PopulationStatistics.FitnessFirstQuartile.ToString("0.0"));
@@ -120,9 +120,9 @@ namespace UI
             labelInfo.Content = sb.ToString();
         }
 
-        private void DrawProgram(Program program, System.Windows.Controls.Image image)
+        private void DrawProgram(String title, Program program, System.Windows.Controls.Image image)
         {
-            Bitmap bmp = program.Draw((float)image.Width, (float)image.Height);
+            Bitmap bmp = program.Draw(title, (float)image.Width, (float)image.Height);
             image.Source = loadBitmap(bmp);
         }
         private void DrawPopulationHistogram(System.Windows.Controls.Image image)

@@ -173,20 +173,24 @@ namespace GP1
         }
 
 
+        static Pen LinePen = new Pen(Brushes.Black, 2);
+        static Font Font = new Font("Script", 12);
+
         private static void DrawNode(Tree.Node node, Graphics g, int depth, float x, float y, float imageWidth)
         {
-            Pen linePen = new Pen(Brushes.Black, 2);
-            Font font = new Font("Script", 14);
+            const int CHAR_WIDTH = 18;
+            const int rectHeight = 25;
+            const int distanceYBetweenNodes = rectHeight * 2;
+
             int rectWidth = 50;
-            int rectHeight = 25;
-            int distanceYBetweenNodes = rectHeight * 2;
             if (depth > 10) return; //only draw to depth 10;
 
             if (node is Tree.FuncNode)
             {
                 Tree.FuncNode functionNode = node as Tree.FuncNode;
+                rectWidth = functionNode.Function.Name.Length * CHAR_WIDTH;
                 g.DrawRectangle(Pens.Blue, x - (rectWidth / 2), y - (rectHeight / 2), rectWidth, rectHeight);
-                g.DrawString(functionNode.Function.Name, font, Brushes.Blue, x - 10, y - 10);
+                g.DrawString(functionNode.Function.Name, Font, Brushes.Blue, x - (rectWidth / 2), y - 10);
 
                 int numberOfChildren = functionNode.Children.Length;
                 float nodeSplitting = (float)(imageWidth / 2) * (float)Math.Pow(0.5, depth) * (float)1.0;
@@ -194,21 +198,23 @@ namespace GP1
                 for (int i = 0; i < numberOfChildren; i++)
                 {
                     float childX = (x - nodeSplitting) + ((i * nodeSplitting * 2) / (numberOfChildren - 1));
-                    g.DrawLine(linePen, x, y + rectHeight / 2, childX, y + distanceYBetweenNodes - rectHeight / 2);
+                    g.DrawLine(LinePen, x, y + rectHeight / 2, childX, y + distanceYBetweenNodes - rectHeight / 2);
                     DrawNode(functionNode.Children[i], g, depth + 1, childX, y + distanceYBetweenNodes, imageWidth);
                 }
             }
             else if (node is Tree.ValueNode)
             {
                 Tree.ValueNode valueNode = node as Tree.ValueNode;
+                rectWidth = valueNode.Value.ToString().Length * CHAR_WIDTH;
                 g.DrawRectangle(Pens.Red, x - (rectWidth / 2), y - (rectHeight / 2), rectWidth, rectHeight);
-                g.DrawString(valueNode.Value.ToString(), font, Brushes.Blue, x - 10, y - 10);
+                g.DrawString(valueNode.Value.ToString(), Font, Brushes.Blue, x - (rectWidth / 2), y - 10);
             }
             else if (node is Tree.VariableNode)
             {
                 Tree.VariableNode variableNode = node as Tree.VariableNode;
+                rectWidth = variableNode.Variable.Name.Length * CHAR_WIDTH;
                 g.DrawRectangle(Pens.DarkGreen, x - (rectWidth / 2), y - (rectHeight / 2), rectWidth, rectHeight);
-                g.DrawString(variableNode.Variable.Name.ToString(), font, Brushes.DarkGreen, x - 10, y - 10);
+                g.DrawString(variableNode.Variable.Name.ToString(), Font, Brushes.DarkGreen, x - (rectWidth / 2), y - 10);
             }
             else throw new ApplicationException();
         }

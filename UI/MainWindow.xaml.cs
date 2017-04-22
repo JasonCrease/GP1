@@ -5,6 +5,7 @@ using System.Threading;
 using GP1;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace UI
 {
@@ -27,7 +28,7 @@ namespace UI
             int maxTrials = 1000;
             int trials = 0;
 
-            m_Engine = new Engine(new FitnessFunction2CardPoker());
+            m_Engine = new Engine(new FitnessFunction3CardPoker());
 
             while (trials++ < maxTrials && bestFitnessSoFar > 0f)
             {
@@ -43,8 +44,8 @@ namespace UI
                 {
                    Dispatcher.Invoke(() =>
                    {
-                       labelGeneration.Content = trials.ToString();
-                       labelFitness.Content = m_Engine.FitnessFunction.Evaluate(m_Program1).ToString();
+                       //labelGeneration.Content = trials.ToString();
+                       //labelFitness.Content = m_Engine.FitnessFunction.Evaluate(m_Program1).ToString();
                        DrawProgram(m_Program1, imageProgram1);
                    });
                 }
@@ -53,7 +54,7 @@ namespace UI
             Dispatcher.Invoke(() =>
             {
                 DrawProgram(m_Program1, imageProgram1);
-                labelFitness.Content = m_Engine.FitnessFunction.Evaluate(m_Program1).ToString();
+                //labelFitness.Content = m_Engine.FitnessFunction.Evaluate(m_Program1).ToString();
             });
             GP1.Compiler.Compiler compiler = new GP1.Compiler.Compiler();
             compiler.Compile(m_Program1, "Prog.dll");
@@ -80,7 +81,7 @@ namespace UI
 
         private void buttonDoEvolution_Click(object sender, RoutedEventArgs e)
         {
-            m_Engine = new Engine(new FitnessFunction2CardPoker());
+            m_Engine = new Engine(new FitnessFunction3CardPoker());
             m_Engine.RunAsync(EvolutionDone);
             updateUiTimer = new Timer(UpdateUiWhenEvolving, null, 1000, 1000);
         }
@@ -100,13 +101,23 @@ namespace UI
         private void ShowStats(Program program)
         {
             DrawPopulationHistogram(imageHistogram);
-            labelGeneration.Content = m_Engine.CurrentGeneration;
-            labelFitness.Content = program.Fitness.ToString("0.0");
-            labelBestTreeSize.Content = program.TreeSize.ToString();
-            label1stQuartile.Content = m_Engine.PopulationStatistics.FitnessFirstQuartile.ToString("0.0");
-            label2ndQuartile.Content = m_Engine.PopulationStatistics.FitnessSecondQuartile.ToString("0.0");
-            label3rdQuartile.Content = m_Engine.PopulationStatistics.FitnessThirdQuartile.ToString("0.0");
-            label4thQuartile.Content = m_Engine.PopulationStatistics.FitnessFourthQuartile.ToString("0.0");
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("Generation:  {0}\n", m_Engine.CurrentGeneration);
+            sb.AppendFormat("Max generations:  {0}\n", Engine.MAXGENERATIONS);
+            sb.AppendFormat("Population: {0}\n", Engine.TARGETPOPULATION);
+            sb.AppendFormat("Mutation Rate:  {0}\n", Engine.MUTATIONRATE);
+            sb.AppendFormat("Crossover Rate:  {0}\n", Engine.CROSSOVERRATE);
+            sb.AppendFormat("Selection P:  {0}\n", Engine.TOURNAMENT_SELECTION_P);
+            sb.AppendLine();
+            sb.AppendFormat("Best fitness:  {0}\n", m_Engine.GetStrongestProgram().Fitness.ToString("0.0"));
+            sb.AppendFormat("Quartile 1:  {0}\n", m_Engine.PopulationStatistics.FitnessFirstQuartile.ToString("0.0"));
+            sb.AppendFormat("Quartile 2:  {0}\n", m_Engine.PopulationStatistics.FitnessSecondQuartile.ToString("0.0"));
+            sb.AppendFormat("Quartile 3:  {0}\n", m_Engine.PopulationStatistics.FitnessThirdQuartile.ToString("0.0"));
+            sb.AppendFormat("Quartile 4:  {0}\n", m_Engine.PopulationStatistics.FitnessFourthQuartile.ToString("0.0"));
+            sb.AppendFormat("Best's treesize:  {0}\n", program.TreeSize.ToString());
+
+            labelInfo.Content = sb.ToString();
         }
 
         private void DrawProgram(Program program, System.Windows.Controls.Image image)

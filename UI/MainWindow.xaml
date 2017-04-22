@@ -13,34 +13,14 @@
                 <Grid >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="110" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <Label Content="Generation" Grid.Row="0" Grid.Column="0"/>
-                    <Label Content="0" Grid.Row="0" Grid.Column="1" Name="labelGeneration"/>
-                    <Label Content="Best Fitness" Grid.Row="1" Grid.Column="0"/>
-                    <Label Content="0.0" Grid.Row="1" Grid.Column="1" Name="labelFitness" />
-                    <Label Content="Best Treesize" Grid.Row="2" Grid.Column="0"/>
-                    <Label Content="0.0" Grid.Row="2" Grid.Column="1" Name="labelBestTreeSize" />
-                    <Label Content="1st Quartile" Grid.Row="3" Grid.Column="0"/>
-                    <Label Content="0.0" Grid.Row="3" Grid.Column="1" Name="label1stQuartile" />
-                    <Label Content="2nd Quartile" Grid.Row="4" Grid.Column="0"/>
-                    <Label Content="0.0" Grid.Row="4" Grid.Column="1" Name="label2ndQuartile" />
-                    <Label Content="3rd Quartile" Grid.Row="5" Grid.Column="0"/>
-                    <Label Content="0.0" Grid.Row="5" Grid.Column="1" Name="label3rdQuartile" />
-                    <Label Content="4th Quartile" Grid.Row="6" Grid.Column="0"/>
-                    <Label Content="0.0" Grid.Row="6" Grid.Column="1" Name="label4thQuartile" />
-                    <Image Name ="imageHistogram" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Height="400" Width="100"/>
+                    <Label Content="Information" Grid.Row="0" Grid.Column="0" Name="labelInfo" />
+                    <Image Name ="imageHistogram" Grid.Row="0" Grid.Column="1" Grid.RowSpan="9" Height="410" Width="110" Margin="5,5,5,5"/>
                 </Grid>
                 
             </StackPanel>

@@ -121,10 +121,13 @@ namespace GP1
             Node replacementNode = GenerateRandomNode(retProg.m_TopNode.Depth / 2);
 
             if (nodeToReplace == 0)
-                retProg.m_TopNode = replacementNode; 
+                retProg.m_TopNode = replacementNode;
             else
-                retProg.m_TopNode.SetNode(nodeToReplace, replacementNode, ref currentNodeNum);
-
+            { 
+            retProg.m_TopNode.SetNode(nodeToReplace, replacementNode, ref currentNodeNum);
+            if (!Node.m_ReplacementDone)
+                throw new ApplicationException();
+            }
             return retProg;
         }
 
@@ -133,19 +136,23 @@ namespace GP1
             Program prog1Clone = this.CloneProgram();
             Tree.Node nodeToTake = null;
 
-                int nodeToTakeNum = s_Random.Next(prog2.TreeSize);
-                int currentNodeNum = 0;
-                nodeToTake = prog2.m_TopNode.GetNodeNumber(nodeToTakeNum, ref currentNodeNum).CloneTree();
-          
+            int nodeToTakeNum = s_Random.Next(prog2.TreeSize);
+            int currentNodeNum = 0;
+            nodeToTake = prog2.m_TopNode.GetNodeNumber(nodeToTakeNum, ref currentNodeNum).CloneTree();
 
-                int prog1NodeToReplace = s_Random.Next(0, prog1Clone.TreeSize);
-                currentNodeNum = 0;
 
-                if (prog1NodeToReplace == 0)
-                    prog1Clone.m_TopNode = nodeToTake;
-                else
-                    prog1Clone.m_TopNode.SetNode(prog1NodeToReplace, nodeToTake, ref currentNodeNum);
-   
+            int prog1NodeToReplace = s_Random.Next(0, prog1Clone.TreeSize);
+            currentNodeNum = 0;
+
+            if (prog1NodeToReplace == 0)
+                prog1Clone.m_TopNode = nodeToTake;
+            else
+            {
+                prog1Clone.m_TopNode.SetNode(prog1NodeToReplace, nodeToTake, ref currentNodeNum);
+                if (!Node.m_ReplacementDone)
+                    throw new ApplicationException();
+            }
+
             return prog1Clone;
         }
         

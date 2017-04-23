@@ -92,13 +92,14 @@ namespace UI
         {
             if (!m_Paused) {
                 m_Paused = true;
+                updateUiTimer.Change(Timeout.Infinite, 1000);
                 buttonPause.Content = "Continue";
                 m_Engine.Pause();
             }
-            else
-            {
+            else {
                 m_Paused = false;
                 buttonPause.Content = "Pause";
+                updateUiTimer.Change(0, 1000);
                 m_Engine.UnPause();
             }
         }
@@ -108,9 +109,19 @@ namespace UI
             Dispatcher.Invoke(delegate {
                     Program p = m_Engine.GetStrongestProgram();
                     DrawProgram("Best Program", p, imageProgram1);
-                    Program p2 = m_Engine.getRandomProgram();
-                    DrawProgram("Some Program", p2, imageProgram2);
-                    ShowStats(p);
+
+                //Program p2 = m_Engine.getRandomProgram();
+                //DrawProgram("Some Program", p2, imageProgram2);
+
+                var ps = m_Engine.GetProgramFamily();
+                if(ps.Item1 != null)
+                    DrawProgram("Parent1", ps.Item1, imageProgram2);
+                if (ps.Item2 != null)
+                    DrawProgram("Parent2", ps.Item2, imageProgram3);
+                if (ps.Item3 != null)
+                    DrawProgram("Child", ps.Item3, imageProgram4);
+
+                ShowStats(p);
                 }
             );
         }

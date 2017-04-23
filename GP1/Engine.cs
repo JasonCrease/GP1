@@ -17,11 +17,12 @@ namespace GP1
         private int[] m_Values;
         private List<Program> m_Progs;
 
-        public const int MAXGENERATIONS = 50;
+        public const int MAXGENERATIONS = 10000;
         public const int TARGETPOPULATION = 500;
         public const float MUTATIONRATE = 0.3f;
-        public const float CROSSOVERRATE = 0.3f;
-        public const double TOURNAMENT_SELECTION_P = 0.05f; // exponential p
+        public const float CROSSOVERRATE = 0.2f;
+        public const int RANDOMPROGSTOADD = 20;
+        public const double TOURNAMENT_SELECTION_P = 0.0002f; // exponential p
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -93,7 +94,7 @@ namespace GP1
             Program[] orderedPrograms = m_Progs.OrderBy(x => x.Fitness).ToArray();
             int existingProgsCount = orderedPrograms.Length;
 
-            const int elitism = 2;
+            const int elitism = 3;
             // Always reproduce best 3 programs
             for (int i = 0; i < elitism; i++)
             {
@@ -101,32 +102,34 @@ namespace GP1
                 progsAdded++;
             }
 
-            // Always add targetpop / 20 random programs
-            nextGenPrograms.AddRange(GetPopulation(TARGETPOPULATION / 20));
-            progsAdded += TARGETPOPULATION / 20;
+            // Always add targetpop / 10 random programs
+            nextGenPrograms.AddRange(GetPopulation(TARGETPOPULATION / RANDOMPROGSTOADD));
+            progsAdded += TARGETPOPULATION / RANDOMPROGSTOADD;
             
             while (progsAdded < TARGETPOPULATION)
             {
+                Program programToAdd = null;
                 double operation = s_Random.NextDouble();
 
                 if(operation < MUTATIONRATE)
                 {
                     // Mutation
                     int progToMutateNum = SelectFrom(existingProgsCount);
-                    Program progToMutate = m_Progs[progToMutateNum].Mutate();
-                    progToMutate.FitnessIsDirty = true;
-                    nextGenPrograms.Add(progToMutate);
-                    progsAdded++;
+                    Program mutatedProgram = orderedPrograms[progToMutateNum].Mutate();
+                    mutatedProgram.FitnessIsDirty = true;
+                    programToAdd = mutatedProgram;
                 }
                 else if (operation < MUTATIONRATE + CROSSOVERRATE)
                 {
                     // Crossover
                     int parent1 = SelectFrom(existingProgsCount);
                     int parent2 = SelectFrom(existingProgsCount);
-                    Program childProgram = m_Progs[parent1].Crossover(m_Progs[parent2]);
+                    Program childProgram = orderedPrograms[parent1].Crossover(orderedPrograms[parent2]);
                     childProgram.FitnessIsDirty = true;
-                    nextGenPrograms.Add(childProgram);
-                    progsAdded++;
+                    m_ExampleParent1 = orderedPrograms[parent1];
+                    m_ExampleParent2 = orderedPrograms[parent2];
+                    m_ExampleChild = childProgram;
+                    programToAdd = childProgram;
                 }
                 else
                 {
@@ -134,26 +137,32 @@ namespace GP1
                     int progToReproduce = SelectFrom(existingProgsCount);
                     if (progToReproduce >= elitism)
                     {
-                        nextGenPrograms.Add(m_Progs[progToReproduce]);
-                        progsAdded++;
+                        programToAdd = orderedPrograms[progToReproduce];
                     }
+                }
+
+                if (programToAdd != null)
+                {
+                    if (s_Random.NextDouble() < 0.2)
+                        programToAdd.TopNode = programToAdd.TopNode.Simplify();
+                    progsAdded++;
+                    nextGenPrograms.Add(programToAdd);
                 }
             }
 
             return nextGenPrograms;
         }
 
-  
-
         double LOG_1_OVER_TOURNAMENT_SELECTION_P = Math.Log(1 - TOURNAMENT_SELECTION_P);
 
         private int SelectFrom(int existingProgsCount)
         {
             double x = 0;
+            double r = 0;
 
             do
             {
-                double r = s_Random.NextDouble();
+                r = s_Random.NextDouble();
                 x = Math.Log(1 - r) / LOG_1_OVER_TOURNAMENT_SELECTION_P;
             } while (x > existingProgsCount);
 
@@ -164,7 +173,7 @@ namespace GP1
         {
             foreach (Program p in m_Progs)
             {
-                if(p.FitnessIsDirty)
+                if (p.FitnessIsDirty)
                     p.Fitness = FitnessFunction.Evaluate(p);
             }
         }
@@ -220,7 +229,14 @@ namespace GP1
             
             return best;
         }
+        public Tuple<Program, Program, Program> GetProgramFamily()
+        {
+            return new Tuple<Program, Program, Program>(m_ExampleParent1, m_ExampleParent2, m_ExampleChild);
+        }
 
+        Program m_ExampleParent1;
+        Program m_ExampleParent2;
+        Program m_ExampleChild;
 
         public Program getRandomProgram()
         {
@@ -241,7 +257,6 @@ namespace GP1
         public Bitmap DrawPopulationHistogram(float width, float height)
         {
             Bitmap bmp = new Bitmap((int)width, (int)height);
-            Brush brush = Brushes.Red;
             Graphics g = Graphics.FromImage(bmp);
 
             lock (m_LockObject)

@@ -12,7 +12,15 @@ namespace GP1
             }
         }
 
-        const int HANDSTODEAL = 400;
+        public double TerminatingFitness
+        {
+            get
+            {
+                return 4;
+            }
+        }
+        
+        const int HANDSTODEAL = 200;
         int[][] C = new int[HANDSTODEAL][];
 
         public FitnessFunction3CardPoker()

@@ -17,11 +17,11 @@ namespace GP1
         private int[] m_Values;
         private List<Program> m_Progs;
 
-        public const int MAXGENERATIONS = 5000;
+        public const int MAXGENERATIONS = 50;
         public const int TARGETPOPULATION = 500;
-        public const float MUTATIONRATE = 0.4f;
-        public const float CROSSOVERRATE = 0.1f;
-        public const double TOURNAMENT_SELECTION_P = 0.1f; // exponential p
+        public const float MUTATIONRATE = 0.3f;
+        public const float CROSSOVERRATE = 0.3f;
+        public const double TOURNAMENT_SELECTION_P = 0.05f; // exponential p
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -63,7 +63,9 @@ namespace GP1
         {
             m_Progs = GetPopulation(TARGETPOPULATION);
 
-            for (m_Gen = 0; m_Gen < MAXGENERATIONS; m_Gen++)
+            for (m_Gen = 0; m_Gen < MAXGENERATIONS && 
+                GetStrongestProgram().Fitness > m_FitnessFunction.TerminatingFitness;
+                m_Gen++)
             {
                 lock (m_LockObject)
                 {
@@ -92,16 +94,16 @@ namespace GP1
             int existingProgsCount = orderedPrograms.Length;
 
             const int elitism = 2;
-            // Always reproduce best 2 programs
+            // Always reproduce best 3 programs
             for (int i = 0; i < elitism; i++)
             {
                 nextGenPrograms.Add(orderedPrograms[i]);
                 progsAdded++;
             }
 
-            // Always add targetpop / 50 random programs
-            nextGenPrograms.AddRange(GetPopulation(TARGETPOPULATION / 50));
-            progsAdded += TARGETPOPULATION / 50;
+            // Always add targetpop / 20 random programs
+            nextGenPrograms.AddRange(GetPopulation(TARGETPOPULATION / 20));
+            progsAdded += TARGETPOPULATION / 20;
             
             while (progsAdded < TARGETPOPULATION)
             {

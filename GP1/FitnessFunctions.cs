@@ -4,6 +4,14 @@ namespace GP1
 {
     public class FitnessFunctionIsQuadratic : IFitnessFunction
     {
+        double IFitnessFunction.TerminatingFitness
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
         public double Evaluate(Program program)
         {
             Tree.Variable XVariable = program.Variables[0];
@@ -38,6 +46,22 @@ namespace GP1
             get
             {
                 return new[] { "C1", "C2", "C3" };
+            }
+        }
+
+        double IFitnessFunction.TerminatingFitness
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
+        string[] IFitnessFunction.Variables
+        {
+            get
+            {
+                throw new NotImplementedException();
             }
         }
 
@@ -100,11 +124,23 @@ namespace GP1
 
             return fitness;
         }
+
+        double IFitnessFunction.Evaluate(Program program)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 
     public class FitnessFunctionAlternatesGettingLarger : IFitnessFunction
     {
+        double IFitnessFunction.TerminatingFitness
+        {
+            get
+            {
+                return 0;
+            }
+        }
         public double Evaluate(Program program)
         {
             Tree.Variable XVariable = program.Variables[0];
@@ -135,6 +171,14 @@ namespace GP1
 
     public class FitnessFunctionOneSometimesZeroes : IFitnessFunction
     {
+        double IFitnessFunction.TerminatingFitness
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
         public double Evaluate(Program program)
         {
             Tree.Variable XVariable = program.Variables[0];

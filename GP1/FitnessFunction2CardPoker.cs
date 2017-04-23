@@ -4,6 +4,14 @@ namespace GP1
 {
     public class FitnessFunction2CardPoker : IFitnessFunction
     {
+        public double TerminatingFitness
+        {
+            get
+            {
+                return 2;
+            }
+        }
+
         public string[] Variables
         {
             get

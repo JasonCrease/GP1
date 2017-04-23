@@ -76,12 +76,13 @@ namespace GP1.Tree
             return null;
         }
 
+        public static bool m_ReplacementDone = false;
+
         internal void SetNode(int nodeNumToReplace, Node nodeToReplaceWith, ref int currentNodeNum)
         {
             if (currentNodeNum > nodeNumToReplace)
-                return;
+                throw new ApplicationException();
             currentNodeNum++;
-
             if (this is Tree.FuncNode)
             {
                 FuncNode thisNode = this as FuncNode;
@@ -90,15 +91,15 @@ namespace GP1.Tree
                 {
                     if (currentNodeNum == nodeNumToReplace) {
                         thisNode.Children[childNum] = nodeToReplaceWith;
+                        m_ReplacementDone = true;
                         return;
                     }
                     else  {
                         thisNode.Children[childNum].SetNode(nodeNumToReplace, nodeToReplaceWith, ref currentNodeNum);
                     }
-                    childNum++;
                 }
             }
-
+            
             return;
         }
 

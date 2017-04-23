@@ -26,8 +26,8 @@ namespace GP1.Compiler
 
             AssemblyName name = new AssemblyName(System.IO.Path.GetFileNameWithoutExtension(moduleName));
             AssemblyBuilder asmb = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Save);
-            ModuleBuilder modb = asmb.DefineDynamicModule(moduleName);
-            TypeBuilder typeBuilder = modb.DefineType("Program");
+            ModuleBuilder modb = asmb.DefineDynamicModule(moduleName); 
+            TypeBuilder typeBuilder = modb.DefineType("Prog.Program", TypeAttributes.Public);
             MethodBuilder methb = typeBuilder.DefineMethod("Function", MethodAttributes.Static | MethodAttributes.Public, typeof(int), argTypes);
 
             for (int i = 0; i < Program.Variables.Length; i++)
@@ -145,9 +145,9 @@ namespace GP1.Compiler
                     GenerateStatement(funcNode.Children[2]);
                     il.MarkLabel(afterLabel);
 
-                    LocalBuilder aLocal = il.DeclareLocal(typeof(Int32));
-                    il.Emit(OpCodes.Stloc, aLocal);
-                    il.Emit(OpCodes.Ldloc, aLocal);
+                    //LocalBuilder aLocal = il.DeclareLocal(typeof(Int32));
+                    //il.Emit(OpCodes.Stloc, aLocal);
+                    //il.Emit(OpCodes.Ldloc, aLocal);
                 }
                 else if (func is Tree.FuncOr)
                 {
@@ -166,6 +166,15 @@ namespace GP1.Compiler
                     GenerateStatement(funcNode.Children[0]);
                     GenerateStatement(funcNode.Children[1]);
                     il.Emit(OpCodes.And);
+                }
+                else if (func is Tree.FuncMax)
+                {
+                    Tree.FuncMax funcMax = func as Tree.FuncMax;
+
+                    // Output the statements, which should leave their values on the stack
+                    GenerateStatement(funcNode.Children[0]);
+                    GenerateStatement(funcNode.Children[1]);
+                    il.Emit(OpCodes.Call, typeof(Math).GetMethod("Max", new Type[] { typeof(int), typeof(int) }));
                 }
                 else
                     throw new ApplicationException("Unknown function");

@@ -55,8 +55,10 @@ namespace GP1.Tree
 
         internal Tree.Node GetNodeNumber(int nodeToMutate, ref int currentNodeNum)
         {
-            if(currentNodeNum == nodeToMutate)
+            if (currentNodeNum == nodeToMutate)
                 return this;
+            else if (currentNodeNum > nodeToMutate)
+                throw new ApplicationException();
             else
             {
                 currentNodeNum++;
@@ -73,6 +75,33 @@ namespace GP1.Tree
 
             return null;
         }
+
+        internal void SetNode(int nodeNumToReplace, Node nodeToReplaceWith, ref int currentNodeNum)
+        {
+            if (currentNodeNum > nodeNumToReplace)
+                return;
+            currentNodeNum++;
+
+            if (this is Tree.FuncNode)
+            {
+                FuncNode thisNode = this as FuncNode;
+
+                for (int childNum = 0; childNum < thisNode.Children.Length; childNum++)
+                {
+                    if (currentNodeNum == nodeNumToReplace) {
+                        thisNode.Children[childNum] = nodeToReplaceWith;
+                        return;
+                    }
+                    else  {
+                        thisNode.Children[childNum].SetNode(nodeNumToReplace, nodeToReplaceWith, ref currentNodeNum);
+                    }
+                    childNum++;
+                }
+            }
+
+            return;
+        }
+
 
         internal Tree.FuncNode GetFunctionNumber(int funcNumToMutate, ref int currentFuncNum)
         {

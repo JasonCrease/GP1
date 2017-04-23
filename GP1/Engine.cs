@@ -17,12 +17,13 @@ namespace GP1
         private int[] m_Values;
         private List<Program> m_Progs;
 
-        public const int MAXGENERATIONS = 10000;
+        public const int MAXGENERATIONS = 2000;
         public const int TARGETPOPULATION = 500;
         public const float MUTATIONRATE = 0.3f;
-        public const float CROSSOVERRATE = 0.2f;
+        public const float CROSSOVERRATE = 0.1f;
         public const int RANDOMPROGSTOADD = 20;
-        public const double TOURNAMENT_SELECTION_P = 0.0002f; // exponential p
+        private readonly int MAXTREESIZE = 120;
+        public const double TOURNAMENT_SELECTION_P = 0.002f; // exponential p
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -94,8 +95,8 @@ namespace GP1
             Program[] orderedPrograms = m_Progs.OrderBy(x => x.Fitness).ToArray();
             int existingProgsCount = orderedPrograms.Length;
 
-            const int elitism = 3;
-            // Always reproduce best 3 programs
+            const int elitism = 1;
+            // Always reproduce best 1 programs
             for (int i = 0; i < elitism; i++)
             {
                 nextGenPrograms.Add(orderedPrograms[i]);
@@ -143,10 +144,13 @@ namespace GP1
 
                 if (programToAdd != null)
                 {
-                    if (s_Random.NextDouble() < 0.2)
+                    if (s_Random.NextDouble() < 0.1)
                         programToAdd.TopNode = programToAdd.TopNode.Simplify();
-                    progsAdded++;
-                    nextGenPrograms.Add(programToAdd);
+                    if (programToAdd.TreeSize < MAXTREESIZE)
+                    { 
+                        progsAdded++;
+                        nextGenPrograms.Add(programToAdd);
+                    }
                 }
             }
 

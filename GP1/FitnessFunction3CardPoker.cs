@@ -82,7 +82,7 @@ namespace GP1
                 fitness += program.Result == desiredResult ? 0 : 1;
             }
 
-            fitness += (double)program.TreeSize / 5D;
+            fitness += (double)program.TreeSize / 2D;
 
             return fitness;
         }

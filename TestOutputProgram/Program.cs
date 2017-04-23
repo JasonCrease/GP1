@@ -17,10 +17,13 @@ namespace TestOutputProgram
                         int calc = Prog.Program.Function(a, b, c);
 
                         if (real == calc)
+                        {
+                            Console.WriteLine("{0},{1},{2} was correctly {3}", a, b, c, calc);
                             rights++;
+                        }
                         else
                         {
-                            Console.WriteLine("{0},{1},{2} should be {3}. Was {4}", a,b,c,real,calc);
+                            Console.WriteLine("{0},{1},{2} should be {3}. Was {4}", a, b, c, real, calc);
                             errors++;
                         }
                     }

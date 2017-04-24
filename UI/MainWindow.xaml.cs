@@ -79,11 +79,24 @@ namespace UI
 
         System.Threading.Timer updateUiTimer;
 
+        bool m_Running = false;
+
         private void buttonDoEvolution_Click(object sender, RoutedEventArgs e)
         {
-            m_Engine = new Engine(new FitnessFunction3CardPoker());
-            m_Engine.RunAsync(EvolutionDone);
-            updateUiTimer = new Timer(UpdateUiWhenEvolving, null, 1000, 1000);
+            if (!m_Running)
+            {
+                m_Running = true;
+                buttonStartEvolution.Content = "Stop evolution";
+                m_Engine = new Engine(new FitnessFunction3CardPoker());
+                m_Engine.RunAsync(EvolutionDone);
+                updateUiTimer = new Timer(UpdateUiWhenEvolving, null, 1000, 1000);
+            }
+            else  {
+                m_Running = false;
+                updateUiTimer.Change(Timeout.Infinite, 1000);
+                buttonStartEvolution.Content = "Start evolution";
+                m_Engine.Stop();
+            }
         }
 
         bool m_Paused = false;
@@ -106,15 +119,16 @@ namespace UI
 
         private void UpdateUiWhenEvolving(object state)
         {
-            Dispatcher.Invoke(delegate {
-                    Program p = m_Engine.GetStrongestProgram();
-                    DrawProgram("Best Program", p, imageProgram1);
+            Dispatcher.Invoke(delegate
+            {
+                Program p = m_Engine.GetStrongestProgram();
+                DrawProgram("Best Program", p, imageProgram1);
 
                 //Program p2 = m_Engine.getRandomProgram();
                 //DrawProgram("Some Program", p2, imageProgram2);
 
                 var ps = m_Engine.GetProgramFamily();
-                if(ps.Item1 != null)
+                if (ps.Item1 != null)
                     DrawProgram("Parent1", ps.Item1, imageProgram2);
                 if (ps.Item2 != null)
                     DrawProgram("Parent2", ps.Item2, imageProgram3);
@@ -122,7 +136,7 @@ namespace UI
                     DrawProgram("Child", ps.Item3, imageProgram4);
 
                 ShowStats(p);
-                }
+            }
             );
         }
 

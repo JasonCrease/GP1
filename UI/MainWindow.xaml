@@ -6,7 +6,7 @@
     <Grid>
         <StackPanel Orientation="Horizontal">
             <StackPanel Orientation="Vertical">
-                <Button Content="Do evolution" Name="buttonDoEvolution" Click ="buttonDoEvolution_Click" Width="200" Height="40"/>
+                <Button Content="Start evolution" Name="buttonStartEvolution" Click ="buttonDoEvolution_Click" Width="200" Height="40"/>
                 <Button Content="Search randomly for program" Name="buttonSearchRandomly" Click="buttonSearchRandomly_Click" Height="40" Width="200"/>
                 <Button Content="Pause" Name="buttonPause" Click ="buttonPause_Click" Width="200" Height="40"/>
 

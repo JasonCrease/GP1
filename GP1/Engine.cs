@@ -17,13 +17,13 @@ namespace GP1
         private int[] m_Values;
         private List<Program> m_Progs;
 
-        public const int MAXGENERATIONS = 2000;
+        public const int MAXGENERATIONS = 20000;
         public const int TARGETPOPULATION = 500;
-        public const float MUTATIONRATE = 0.3f;
-        public const float CROSSOVERRATE = 0.1f;
-        public const int RANDOMPROGSTOADD = 20;
+        public const float MUTATIONRATE = 0.2f;
+        public const float CROSSOVERRATE = 0.2f;
+        public const int RANDOMPROGSTOADD = TARGETPOPULATION / 20;
         private readonly int MAXTREESIZE = 120;
-        public const double TOURNAMENT_SELECTION_P = 0.002f; // exponential p
+        public const double TOURNAMENT_SELECTION_P = (1d / TARGETPOPULATION) * 1.0f; // exponential p
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -40,6 +40,11 @@ namespace GP1
             m_RunThread = new Thread(Run);
             m_RunThread.IsBackground = true;
             m_RunThread.Start();
+        }
+        public void Stop()
+        {
+            m_EvolutionDone.BeginInvoke(this, null, null, null);
+            m_RunThread.Abort();
         }
 
         private object m_LockObject = new object();
@@ -202,15 +207,15 @@ namespace GP1
 
             m_Functions = new Tree.Func[] { 
                 //new Tree.FuncMultiply(), 
-                new Tree.FuncAdd(), 
+                //new Tree.FuncAdd(), 
                 //new Tree.FuncModulo(), 
                 new Tree.FuncSubtract(), 
-                new Tree.FuncMax(), 
+                //new Tree.FuncMax(), 
                 new Tree.FuncIf(Tree.Comparator.GreaterThan), 
                 new Tree.FuncIf(Tree.Comparator.Equal), 
                 //new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual),
-                new Tree.FuncAnd(), 
-                new Tree.FuncOr()
+                //new Tree.FuncAnd(), 
+                //new Tree.FuncOr()
             };
             m_Values = new int[] { 0, 1, 2, 3 };
         }

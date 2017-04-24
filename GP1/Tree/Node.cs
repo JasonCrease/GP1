@@ -67,7 +67,7 @@ namespace GP1.Tree
                     FuncNode thisNode = this as FuncNode;
                     foreach (Node n in thisNode.Children)
                     {
-                        Tree.Node posNode = GetNodeNumber(nodeToMutate, ref currentNodeNum);
+                        Tree.Node posNode = n.GetNodeNumber(nodeToMutate, ref currentNodeNum);
                         if (posNode != null) return posNode;
                     }
                 }

@@ -19,10 +19,10 @@ namespace GP1
 
         public const int MAXGENERATIONS = 20000;
         public const int TARGETPOPULATION = 500;
-        public const float MUTATIONRATE = 0.2f;
-        public const float CROSSOVERRATE = 0.7f;
+        public const float MUTATIONRATE = 0.1f;
+        public const float CROSSOVERRATE = 0.8f;
         private readonly int MAXTREESIZE = 120;
-        public double TOURNAMENT_SELECTION_P = (1d / TARGETPOPULATION) * 1.0f; // exponential p
+        public double TOURNAMENT_SELECTION_P = (1d / TARGETPOPULATION) * 5.0f; // exponential p
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -206,15 +206,15 @@ namespace GP1
 
             m_Functions = new Tree.Func[] { 
                 //new Tree.FuncMultiply(), 
-                //new Tree.FuncAdd(), 
+                new Tree.FuncAdd(), 
                 //new Tree.FuncModulo(), 
                 new Tree.FuncSubtract(), 
-                //new Tree.FuncMax(), 
+                new Tree.FuncMax(), 
                 new Tree.FuncIf(Tree.Comparator.GreaterThan), 
                 new Tree.FuncIf(Tree.Comparator.Equal), 
                 //new Tree.FuncIf(Tree.Comparator.GreaterThanOrEqual),
-                //new Tree.FuncAnd(), 
-                //new Tree.FuncOr()
+                new Tree.FuncAnd(), 
+                new Tree.FuncOr()
             };
             m_Values = new int[] { 0, 1, 2, 3 };
         }

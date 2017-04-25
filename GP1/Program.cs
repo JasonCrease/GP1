@@ -14,7 +14,7 @@ namespace GP1
         private int[] m_Values;
 
         private Tree.Variable[] m_Variables;
-        public Tree.Variable[] Variables { get { return m_Variables;  } }
+        public Tree.Variable[] Variables { get { return m_Variables; } }
 
         const int MAXPROGRAMDEPTH = 6;
         const int MAXNODES = 50;
@@ -22,12 +22,13 @@ namespace GP1
         private static Random s_Random = new Random();
 
         private bool m_FitnessIsDirty = true;
-        public bool FitnessIsDirty {  set { m_FitnessIsDirty = value; } get { return m_FitnessIsDirty; } }
+        public bool FitnessIsDirty { set { m_FitnessIsDirty = value; } get { return m_FitnessIsDirty; } }
 
         public Tree.Node TopNode
         {
             get { return m_TopNode; }
-            set {
+            set
+            {
                 if (m_TopNode != value)
                 {
                     m_TopNode = value;
@@ -38,10 +39,11 @@ namespace GP1
         public double Fitness
         {
             get { return m_Fitness; }
-            set {
-                    m_Fitness = value;
-                    m_FitnessIsDirty = false;
-                }
+            set
+            {
+                m_Fitness = value;
+                m_FitnessIsDirty = false;
+            }
         }
         public float Result
         {
@@ -55,27 +57,53 @@ namespace GP1
             p.m_Functions = functions;
             p.m_Values = values;
             p.m_Variables = variables;
-            p.m_TopNode = p.GenerateRandomNode(0);
+
+            if (s_Random.NextDouble() < 0.5)
+                p.m_TopNode = p.GenerateRandomNode(0, RandomGenerationMethod.FULL);
+            else
+                p.m_TopNode = p.GenerateRandomNode(0, RandomGenerationMethod.GROW);
 
             return p;
         }
 
         int m_NodesAdded = 0;
+        const int MAXFULLDEPTH = 3;
 
-        private Tree.Node GenerateRandomNode(int depth)
+        private Tree.Node GenerateRandomNode(int depth, RandomGenerationMethod randomGenMeth)
         {
             double randType = s_Random.NextDouble();
             Tree.Node node;
+            bool generateTerminal = true;
 
-            if (randType > 0.7 || depth >= MAXPROGRAMDEPTH || m_NodesAdded > MAXNODES)
+            if (randomGenMeth == RandomGenerationMethod.FULL)
             {
-                int valueNum = s_Random.Next(m_Values.Length);
-                node = new Tree.ValueNode(m_Values[valueNum]);
+                if (depth >= MAXFULLDEPTH)
+                    generateTerminal = true;
+                else
+                    generateTerminal = false;
             }
-            else if (randType > 0.4)
+            else if (randomGenMeth == RandomGenerationMethod.GROW)
             {
-                int variableNum = s_Random.Next(m_Variables.Length);
-                node = new Tree.VariableNode(m_Variables[variableNum]);
+                if (s_Random.NextDouble() < 0.5 || depth >= MAXFULLDEPTH)
+                    generateTerminal = true;
+                else
+                    generateTerminal = false;
+            }
+            else
+                throw new ApplicationException();
+
+            if (generateTerminal)
+            {
+                if (s_Random.NextDouble() < 0.5)
+                {
+                    int valueNum = s_Random.Next(m_Values.Length);
+                    node = new Tree.ValueNode(m_Values[valueNum]);
+                }
+                else
+                {
+                    int variableNum = s_Random.Next(m_Variables.Length);
+                    node = new Tree.VariableNode(m_Variables[variableNum]);
+                }
             }
             else
             {
@@ -83,11 +111,15 @@ namespace GP1
 
                 if (m_Functions[funcNum].NumberOfArguments == 2)
                     node = new Tree.FuncNode(
-                        new Tree.Node[] { GenerateRandomNode(depth + 1), GenerateRandomNode(depth + 1) },
+                        new Tree.Node[] { GenerateRandomNode(depth + 1, randomGenMeth), GenerateRandomNode(depth + 1, randomGenMeth) },
                         m_Functions[funcNum]);
                 else if (m_Functions[funcNum].NumberOfArguments == 4)
                     node = new Tree.FuncNode(
-                        new Tree.Node[] { GenerateRandomNode(depth + 1), GenerateRandomNode(depth + 1), GenerateRandomNode(depth + 1), GenerateRandomNode(depth + 1) },
+                        new Tree.Node[] {
+                            GenerateRandomNode(depth + 1, randomGenMeth),
+                            GenerateRandomNode(depth + 1, randomGenMeth),
+                            GenerateRandomNode(depth + 1, randomGenMeth),
+                            GenerateRandomNode(depth + 1, randomGenMeth) },
                         m_Functions[funcNum]);
                 else throw new ApplicationException();
             }
@@ -118,15 +150,15 @@ namespace GP1
             int nodeToReplace = s_Random.Next(0, retProg.TreeSize);
             int currentNodeNum = 0;
 
-            Node replacementNode = GenerateRandomNode(retProg.m_TopNode.Depth / 2);
+            Node replacementNode = GenerateRandomNode(0, RandomGenerationMethod.GROW);
 
             if (nodeToReplace == 0)
                 retProg.m_TopNode = replacementNode;
             else
-            { 
-            retProg.m_TopNode.SetNode(nodeToReplace, replacementNode, ref currentNodeNum);
-            if (!Node.m_ReplacementDone)
-                throw new ApplicationException();
+            {
+                retProg.m_TopNode.SetNode(nodeToReplace, replacementNode, ref currentNodeNum);
+                if (!Node.m_ReplacementDone)
+                    throw new ApplicationException();
             }
             return retProg;
         }
@@ -164,7 +196,7 @@ namespace GP1
 
             return prog1Clone;
         }
-        
+
 
         public void Run()
         {
@@ -186,7 +218,7 @@ namespace GP1
         }
 
         static Font TitleFont = new Font("Arial", 16);
-        static Pen LinePen = new Pen(Brushes.Black, 2);
+        static Pen LinePen = new Pen(Brushes.Black, 1);
         static Font Font = new Font("Arial", 12);
 
         private static void DrawNode(Tree.Node node, Graphics g, int depth, float x, float y, float imageWidth)
@@ -203,15 +235,15 @@ namespace GP1
                 Tree.FuncNode functionNode = node as Tree.FuncNode;
                 rectWidth = functionNode.Function.Name.Length * CHAR_WIDTH;
                 g.DrawRectangle(Pens.Blue, x - (rectWidth / 2), y - (rectHeight / 2), rectWidth, rectHeight);
-                g.DrawString(functionNode.Function.Name, Font, Brushes.Blue, x - (rectWidth / 2), y - 10);
+                g.DrawString(functionNode.Function.Name, Font, Brushes.Blue, x - (rectWidth / 2), y - (rectHeight / 2));
 
                 int numberOfChildren = functionNode.Children.Length;
                 float nodeSplitting = (float)(imageWidth / 2) * (float)Math.Pow(0.5, depth) * (float)1.0;
 
                 for (int i = 0; i < numberOfChildren; i++)
                 {
-                    float childX = (x - nodeSplitting) + ((i * nodeSplitting * 2) / (numberOfChildren - 1));
-                    g.DrawLine(LinePen, x, y + rectHeight / 2, childX, y + distanceYBetweenNodes - rectHeight / 2);
+                    float childX = (x - nodeSplitting) + (((float)Math.Pow(i, 0.8) * nodeSplitting * 2) / (numberOfChildren - 1));
+                    g.DrawLine(LinePen, x, y + rectHeight / 2, childX, y + distanceYBetweenNodes - (rectHeight / 2));
                     DrawNode(functionNode.Children[i], g, depth + 1, childX, y + distanceYBetweenNodes, imageWidth);
                 }
             }
@@ -220,14 +252,14 @@ namespace GP1
                 Tree.ValueNode valueNode = node as Tree.ValueNode;
                 rectWidth = valueNode.Value.ToString().Length * CHAR_WIDTH;
                 g.DrawRectangle(Pens.Red, x - (rectWidth / 2), y - (rectHeight / 2), rectWidth, rectHeight);
-                g.DrawString(valueNode.Value.ToString(), Font, Brushes.Blue, x - (rectWidth / 2), y - 10);
+                g.DrawString(valueNode.Value.ToString(), Font, Brushes.Blue, x - (rectWidth / 2), y - (rectHeight / 2));
             }
             else if (node is Tree.VariableNode)
             {
                 Tree.VariableNode variableNode = node as Tree.VariableNode;
                 rectWidth = variableNode.Variable.Name.Length * CHAR_WIDTH;
                 g.DrawRectangle(Pens.DarkGreen, x - (rectWidth / 2), y - (rectHeight / 2), rectWidth, rectHeight);
-                g.DrawString(variableNode.Variable.Name.ToString(), Font, Brushes.DarkGreen, x - (rectWidth / 2), y - 10);
+                g.DrawString(variableNode.Variable.Name.ToString(), Font, Brushes.DarkGreen, x - (rectWidth / 2), y - (rectHeight / 2));
             }
             else throw new ApplicationException();
         }
@@ -239,6 +271,11 @@ namespace GP1
             {
                 return m_TopNode.Treesize;
             }
+        }
+
+        private enum RandomGenerationMethod
+        {
+            GROW, FULL
         }
     }
 }

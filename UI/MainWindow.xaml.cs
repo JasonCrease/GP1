@@ -88,6 +88,9 @@ namespace UI
                 m_Running = true;
                 buttonStartEvolution.Content = "Stop evolution";
                 m_Engine = new Engine(new FitnessFunction3CardPoker());
+                sliderSelectionP.Value = m_Engine.SelectionP;
+                sliderSelectionP.Maximum = m_Engine.SelectionP * 2;
+                sliderSelectionP.TickFrequency = m_Engine.SelectionP / 20;
                 m_Engine.RunAsync(EvolutionDone);
                 updateUiTimer = new Timer(UpdateUiWhenEvolving, null, 1000, 1000);
             }
@@ -150,7 +153,7 @@ namespace UI
             sb.AppendFormat("Population:  {0}\n", Engine.TARGETPOPULATION);
             sb.AppendFormat("Mutation Rate:  {0}\n", Engine.MUTATIONRATE.ToString("0.000"));
             sb.AppendFormat("Crossover Rate:  {0}\n", Engine.CROSSOVERRATE.ToString("0.000"));
-            sb.AppendFormat("Selection P:  {0}\n", Engine.TOURNAMENT_SELECTION_P.ToString("0.000"));
+            sb.AppendFormat("Selection P:  {0}\n", m_Engine.TOURNAMENT_SELECTION_P.ToString("0.000"));
             sb.AppendLine();
             sb.AppendFormat("Best fitness:  {0}\n", m_Engine.GetStrongestProgram().Fitness.ToString("0.0"));
             sb.AppendFormat("Quartile 1:  {0}\n", m_Engine.PopulationStatistics.FitnessFirstQuartile.ToString("0.0"));
@@ -192,6 +195,12 @@ namespace UI
             }
 
             return bs;
+        }
+
+        private void sliderSelectionP_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(m_Engine != null)
+                m_Engine.TOURNAMENT_SELECTION_P = e.NewValue;
         }
     }
 }

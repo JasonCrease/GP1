@@ -20,10 +20,9 @@ namespace GP1
         public const int MAXGENERATIONS = 20000;
         public const int TARGETPOPULATION = 500;
         public const float MUTATIONRATE = 0.2f;
-        public const float CROSSOVERRATE = 0.2f;
-        public const int RANDOMPROGSTOADD = TARGETPOPULATION / 20;
+        public const float CROSSOVERRATE = 0.7f;
         private readonly int MAXTREESIZE = 120;
-        public const double TOURNAMENT_SELECTION_P = (1d / TARGETPOPULATION) * 1.0f; // exponential p
+        public double TOURNAMENT_SELECTION_P = (1d / TARGETPOPULATION) * 1.0f; // exponential p
 
         private Thread m_RunThread;
         private event EventHandler m_EvolutionDone;
@@ -56,6 +55,11 @@ namespace GP1
 
         private PopulationStatistics m_PopulationStatistics;
         public PopulationStatistics PopulationStatistics { get { return m_PopulationStatistics; } }
+
+        public double SelectionP {
+            get { return TOURNAMENT_SELECTION_P; }
+            set { TOURNAMENT_SELECTION_P = value; }
+        }
 
         public void Pause()
         {
@@ -108,10 +112,6 @@ namespace GP1
                 progsAdded++;
             }
 
-            // Always add targetpop / 10 random programs
-            nextGenPrograms.AddRange(GetPopulation(TARGETPOPULATION / RANDOMPROGSTOADD));
-            progsAdded += TARGETPOPULATION / RANDOMPROGSTOADD;
-            
             while (progsAdded < TARGETPOPULATION)
             {
                 Program programToAdd = null;
@@ -162,10 +162,9 @@ namespace GP1
             return nextGenPrograms;
         }
 
-        double LOG_1_OVER_TOURNAMENT_SELECTION_P = Math.Log(1 - TOURNAMENT_SELECTION_P);
-
         private int SelectFrom(int existingProgsCount)
         {
+            double LOG_1_OVER_TOURNAMENT_SELECTION_P = Math.Log(1 - TOURNAMENT_SELECTION_P);
             double x = 0;
             double r = 0;
 

@@ -136,13 +136,22 @@ namespace GP1
             Program prog1Clone = this.CloneProgram();
             Tree.Node nodeToTake = null;
 
-            int nodeToTakeNum = s_Random.Next(prog2.TreeSize);
-            int currentNodeNum = 0;
-            nodeToTake = prog2.m_TopNode.GetNodeNumber(nodeToTakeNum, ref currentNodeNum).CloneTree();
-
+            // 90% of the time do function crossover. 10% of time, just choose any node
+            if (s_Random.NextDouble() > 0.1 && prog2.m_TopNode.TreeSizeFunctionsOnly > 0)
+            {
+                int funcNumToMutate = s_Random.Next(prog2.m_TopNode.TreeSizeFunctionsOnly);
+                int currentFuncNum = 0;
+                nodeToTake = prog2.m_TopNode.GetFunctionNumber(funcNumToMutate, ref currentFuncNum).CloneTree();
+            }
+            else
+            {
+                int nodeToTakeNum = s_Random.Next(prog2.TreeSize);
+                int currentNodeNumProg2 = 0;
+                nodeToTake = prog2.m_TopNode.GetNodeNumber(nodeToTakeNum, ref currentNodeNumProg2).CloneTree();
+            }
 
             int prog1NodeToReplace = s_Random.Next(0, prog1Clone.TreeSize);
-            currentNodeNum = 0;
+            int currentNodeNum = 0;
 
             if (prog1NodeToReplace == 0)
                 prog1Clone.m_TopNode = nodeToTake;
